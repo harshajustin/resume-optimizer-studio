@@ -44,12 +44,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
   },
   define: {
-    // Ensure NODE_ENV is properly set
     'process.env.NODE_ENV': JSON.stringify(mode === 'production' ? 'production' : 'development'),
-    // Explicitly define for React
     __DEV__: mode !== 'production',
-    'process.env': {
-      NODE_ENV: JSON.stringify(mode === 'production' ? 'production' : 'development'),
-    },
   },
 }));
