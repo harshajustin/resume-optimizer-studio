@@ -1,73 +1,112 @@
-# Welcome to your Lovable project
+# Resume Optimizer Studio
 
-## Project info
+A modern web application for optimizing resumes and tracking job applications, built with React, TypeScript, and Tailwind CSS.
 
-**URL**: https://lovable.dev/projects/8437c7cc-887a-45f2-8be5-2255620194ce
+## 🚀 Live Demo
+**Deployed on DigitalOcean App Platform**: [Your App URL]
 
-## How can I edit this code?
+## 📋 Features
+- **Resume Upload & Analysis** with drag-and-drop support
+- **Job Tracker** with Kanban board interface
+- **Job Search & Discovery** with advanced filtering
+- **Resume Management** with version control
+- **Scan History** for tracking optimization progress
+- **Modern UI** with teal/emerald color palette
 
-There are several ways of editing your application.
+## 🛠 Tech Stack
+- **Frontend**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS + shadcn/ui
+- **Package Manager**: npm
+- **Deployment**: DigitalOcean App Platform
 
-**Use Lovable**
+## 🚀 Deployment
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/8437c7cc-887a-45f2-8be5-2255620194ce) and start prompting.
+### DigitalOcean App Platform
+This project is configured for deployment on DigitalOcean App Platform:
 
-Changes made via Lovable will be committed automatically to this repo.
+1. **Automatic Deployment**: Connected to GitHub for automatic deployments
+2. **Build Command**: `npm install && npm run build`
+3. **Run Command**: `npm run preview`
+4. **Environment**: Node.js with npm package manager
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Environment Variables
+```env
+NODE_ENV=production
+VITE_APP_TITLE="Resume Optimizer Studio"
+VITE_APP_VERSION="1.0.0"
 ```
 
-**Edit a file directly in GitHub**
+## 💻 Local Development
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Prerequisites
+- Node.js 18+ (recommended: use [nvm](https://github.com/nvm-sh/nvm))
+- npm (comes with Node.js)
 
-**Use GitHub Codespaces**
+### Setup
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```sh
+# Clone the repository
+git clone https://github.com/harshajustin/resume-optimizer-studio.git
 
-## What technologies are used for this project?
+# Navigate to project directory
+cd resume-optimizer-studio
 
-This project is built with:
+# Install dependencies
+npm install
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+# Start development server
+npm run dev
 
-## How can I deploy this project?
+# Build for production
+npm run build
 
-Simply open [Lovable](https://lovable.dev/projects/8437c7cc-887a-45f2-8be5-2255620194ce) and click on Share -> Publish.
+# Preview production build
+npm run preview
+```
 
-## Can I connect a custom domain to my Lovable project?
+### Available Scripts
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm run start` - Start production server
 
-Yes, you can!
+## 🎯 Project Status
+See [PROJECT_STATUS.md](./PROJECT_STATUS.md) for detailed project roadmap and current implementation status.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 🛠 Development
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+### Code Quality
+- **ESLint**: Configured for React + TypeScript
+- **TypeScript**: Strict type checking enabled
+- **Prettier**: Code formatting (can be added)
+- **shadcn/ui**: Consistent component library
+
+### Git Workflow
+1. Create feature branches from `main`
+2. Make changes and test locally
+3. Run `npm run lint` to check for errors
+4. Commit and push changes
+5. DigitalOcean App Platform will auto-deploy
+
+## 📦 Dependencies
+- **React 18**: Latest React with hooks
+- **TypeScript**: Type safety and better DX
+- **Vite**: Fast build tool and dev server
+- **Tailwind CSS**: Utility-first CSS framework
+- **Radix UI**: Accessible component primitives
+- **shadcn/ui**: Pre-built component library
+- **React Router**: Client-side routing
+- **Lucide React**: Beautiful icons
+
+## 🚀 Next Steps
+1. **Backend Integration**: Add API endpoints for data persistence
+2. **Authentication**: Implement user login/registration
+3. **Resume Processing**: AI-powered resume analysis
+4. **Job Integration**: Connect to external job APIs
+5. **Mobile App**: React Native implementation
+
+---
+
+Built with ❤️ using React, TypeScript, and modern web technologies.
