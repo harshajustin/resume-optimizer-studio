@@ -139,10 +139,10 @@ const JobTrackerPage = () => {
   );
 
   return (
-    <div className="flex h-full bg-background">
+    <div className="flex h-screen w-full bg-background">
       {/* Left Sidebar - Jobs Search and List */}
       <div className={`border-r border-border bg-card flex flex-col transition-all duration-300 ${
-        isSidebarCollapsed ? 'w-12' : 'w-96'
+        isSidebarCollapsed ? 'w-12' : 'w-[18rem]'
       }`}>
         {/* Collapse/Expand Button */}
         <div className="p-2 border-b border-border flex justify-end">
@@ -244,135 +244,143 @@ const JobTrackerPage = () => {
       </div>
 
       {/* Main Content - Job Tracker */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
         <div className="border-b border-border p-6">
           <h1 className="text-2xl font-bold">Job Tracker</h1>
         </div>
 
-        {/* Three Column Layout */}
-        <div className="flex-1 p-6">
-          <div className={`grid gap-6 h-full transition-all duration-300 ${
-            isSidebarCollapsed ? 'grid-cols-5' : 'grid-cols-4'
-          }`}>
-            {/* Saved Column */}
-            <DropZone
-              status="saved"
-              title="Saved"
-              count={savedJobs.length}
-              description="Jobs saved from our chrome extension or the scan report will appear here."
-            >
-              {/* Add Company Section */}
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center">
-                    <span className="text-xs text-gray-600 font-medium">LOW</span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">IT Intern</p>
-                    <p className="text-xs text-gray-500">Company Name</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-2">
-                  <Input
-                    placeholder="Add company name"
-                    value={newCompanyName}
-                    onChange={(e) => setNewCompanyName(e.target.value)}
-                    className="text-sm flex-1"
-                    onKeyPress={(e) => e.key === 'Enter' && handleAddCompany()}
-                  />
-                  <Button 
-                    size="sm" 
-                    onClick={handleAddCompany}
-                    className="shrink-0 text-blue-600 bg-white border border-blue-600 hover:bg-blue-50"
-                  >
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Saved Jobs */}
-              <div className="space-y-3">
-                {savedJobs.map((job) => (
-                  <JobCard key={job.id} job={job} isDraggable />
-                ))}
-              </div>
-            </DropZone>
-
-            {/* Applied Column */}
-            <DropZone
-              status="applied"
-              title="Applied"
-              description="Application completed. Awaiting response from employer or recruiter."
-            >
-              <div className="space-y-3">
-                {appliedJobs.map((job) => (
-                  <JobCard key={job.id} job={job} isDraggable />
-                ))}
-                {appliedJobs.length === 0 && (
-                  <div className="flex items-center justify-center h-40 text-gray-400">
-                    <p className="text-sm">No applications yet</p>
-                  </div>
-                )}
-              </div>
-            </DropZone>
-
-            {/* Interview Column */}
-            <DropZone
-              status="interview"
-              title="Interview"
-              description="Invited to interview? Record the interview date and notes here."
-            >
-              <div className="space-y-3">
-                {interviewJobs.map((job) => (
-                  <JobCard key={job.id} job={job} isDraggable />
-                ))}
-                {interviewJobs.length === 0 && (
-                  <div className="flex items-center justify-center h-40 text-gray-400">
-                    <p className="text-sm">No interviews scheduled</p>
-                  </div>
-                )}
-              </div>
-            </DropZone>
-
-            {/* Rejected Column */}
-            <DropZone
-              status="rejected"
-              title="Rejected"
-              description="Applications that were not successful. Keep track for future reference."
-            >
-              <div className="space-y-3">
-                {rejectedJobs.map((job) => (
-                  <JobCard key={job.id} job={job} isDraggable />
-                ))}
-                {rejectedJobs.length === 0 && (
-                  <div className="flex items-center justify-center h-40 text-gray-400">
-                    <p className="text-sm">No rejections yet</p>
-                  </div>
-                )}
-              </div>
-            </DropZone>
-
-            {/* Fifth Column - Offer (only shown when sidebar is collapsed) */}
-            {isSidebarCollapsed && (
-              <DropZone
-                status="offer"
-                title="Offer"
-                description="Interview completed. Waiting for offer from the company."
-              >
-                <div className="space-y-3">
-                  {offerJobs.map((job) => (
-                    <JobCard key={job.id} job={job} isDraggable />
-                  ))}
-                  {offerJobs.length === 0 && (
-                    <div className="flex items-center justify-center h-40 text-gray-400">
-                      <p className="text-sm">No offers yet</p>
+        {/* Main Content - Job Tracker */}
+        <div className="flex-1 p-6 overflow-hidden">
+          <div className="h-full overflow-x-auto overflow-y-hidden">
+            <div className="flex gap-6 h-full" style={{ minWidth: '1500px' }}>
+              {/* Saved Column */}
+              <div className="flex-shrink-0 w-80">
+                <DropZone
+                  status="saved"
+                  title="Saved"
+                  count={savedJobs.length}
+                  description="Jobs saved from our chrome extension or the scan report will appear here."
+                >
+                  {/* Add Company Section */}
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center">
+                        <span className="text-xs text-gray-600 font-medium">LOW</span>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">IT Intern</p>
+                        <p className="text-xs text-gray-500">Company Name</p>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </DropZone>
-            )}
+                    
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder="Add company name"
+                        value={newCompanyName}
+                        onChange={(e) => setNewCompanyName(e.target.value)}
+                        className="text-sm flex-1"
+                        onKeyPress={(e) => e.key === 'Enter' && handleAddCompany()}
+                      />
+                      <Button 
+                        size="sm" 
+                        onClick={handleAddCompany}
+                        className="shrink-0 text-blue-600 bg-white border border-blue-600 hover:bg-blue-50"
+                      >
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Saved Jobs */}
+                  <div className="space-y-3">
+                    {savedJobs.map((job) => (
+                      <JobCard key={job.id} job={job} isDraggable />
+                    ))}
+                  </div>
+                </DropZone>
+              </div>
+
+              {/* Applied Column */}
+              <div className="flex-shrink-0 w-80">
+                <DropZone
+                  status="applied"
+                  title="Applied"
+                  description="Application completed. Awaiting response from employer or recruiter."
+                >
+                  <div className="space-y-3">
+                    {appliedJobs.map((job) => (
+                      <JobCard key={job.id} job={job} isDraggable />
+                    ))}
+                    {appliedJobs.length === 0 && (
+                      <div className="flex items-center justify-center h-40 text-gray-400">
+                        <p className="text-sm">No applications yet</p>
+                      </div>
+                    )}
+                  </div>
+                </DropZone>
+              </div>
+
+              {/* Interview Column */}
+              <div className="flex-shrink-0 w-80">
+                <DropZone
+                  status="interview"
+                  title="Interview"
+                  description="Invited to interview? Record the interview date and notes here."
+                >
+                  <div className="space-y-3">
+                    {interviewJobs.map((job) => (
+                      <JobCard key={job.id} job={job} isDraggable />
+                    ))}
+                    {interviewJobs.length === 0 && (
+                      <div className="flex items-center justify-center h-40 text-gray-400">
+                        <p className="text-sm">No interviews scheduled</p>
+                      </div>
+                    )}
+                  </div>
+                </DropZone>
+              </div>
+
+              {/* Rejected Column */}
+              <div className="flex-shrink-0 w-80">
+                <DropZone
+                  status="rejected"
+                  title="Rejected"
+                  description="Applications that were not successful. Keep track for future reference."
+                >
+                  <div className="space-y-3">
+                    {rejectedJobs.map((job) => (
+                      <JobCard key={job.id} job={job} isDraggable />
+                    ))}
+                    {rejectedJobs.length === 0 && (
+                      <div className="flex items-center justify-center h-40 text-gray-400">
+                        <p className="text-sm">No rejections yet</p>
+                      </div>
+                    )}
+                  </div>
+                </DropZone>
+              </div>
+
+              {/* Offer Column */}
+              <div className="flex-shrink-0 w-80">
+                <DropZone
+                  status="offer"
+                  title="Offer"
+                  description="Interview completed. Waiting for offer from the company."
+                >
+                  <div className="space-y-3">
+                    {offerJobs.map((job) => (
+                      <JobCard key={job.id} job={job} isDraggable />
+                    ))}
+                    {offerJobs.length === 0 && (
+                      <div className="flex items-center justify-center h-40 text-gray-400">
+                        <p className="text-sm">No offers yet</p>
+                      </div>
+                    )}
+                  </div>
+                </DropZone>
+              </div>
+            </div>
           </div>
         </div>
       </div>
