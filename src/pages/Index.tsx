@@ -2,6 +2,7 @@ import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/Dashboard";
 import JobTrackerPage from "@/components/JobTrackerPage";
+import FindJobs from "@/components/FindJobs";
 
 const Index = () => {
   const [activeItem, setActiveItem] = useState("dashboard");
@@ -16,7 +17,8 @@ const Index = () => {
       <main className="flex-1 overflow-y-auto">
         {activeItem === "dashboard" && <Dashboard />}
         {activeItem === "new-scan" && <Dashboard />}
-        {(activeItem === "job-tracker" || activeItem === "find-jobs") && <JobTrackerPage />}
+        {activeItem === "job-tracker" && <JobTrackerPage />}
+        {activeItem === "find-jobs" && <FindJobs />}
         {/* Other views can be added here */}
       </main>
     </div>

@@ -1,359 +1,380 @@
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { Badge } from "./ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Search, MapPin, Bookmark, Heart } from "lucide-react";
-import { useState } from "react";
+import { Search, MapPin, ExternalLink, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, DragEvent } from "react";
+
+interface Job {
+  id: string;
+  title: string;
+  company: string;
+  location: string;
+  timeAgo: string;
+  status: 'saved' | 'applied' | 'interview' | 'rejected' | 'offer';
+}
 
 const JobTrackerPage = () => {
-  const [selectedJob, setSelectedJob] = useState(0);
-
-  const jobs = [
+  const [jobs, setJobs] = useState<Job[]>([
     {
-      id: 1,
+      id: "1",
       title: "Financial Services Account Associate II",
       company: "FIS",
       location: "Greater Hyderabad Area",
       timeAgo: "1 day ago",
-      type: "Full-time",
-      description: "Are you curious, motivated, and forward-thinking? At FIS, you'll have the opportunity to work on some of the most challenging and relevant issues in financial services and technology. Our talented people empower us, and we believe in being part of a team that is open, collaborative, entrepreneurial, passionate and above all fun.",
-      aboutTeam: "The Transfer Agency is a division responsible for Transaction Operations, Processing and associated functions of mutual funds for various clients.",
-      responsibilities: [
-        "Verifying and processing customer requests to ensure information is correct and in good order, and takes appropriate action",
-        "Performing quality control activities to ensure quality standards are met",
-        "Producing template email or written correspondence to customers, when appropriate",
-        "Adhering to all policies & procedure guidelines and divisional operational metrics/standards to achieve operational, productivity and quality",
-        "Adhering to all front/company policies and regulatory controls/requirement",
-        "Identifying improvement opportunities to streamline business processes resulting in greater efficiencies, productivity and/or service",
-        "Providing backup support to other areas within the unit when required",
-        "Excellent customer service skills that build high levels of customer satisfaction",
-        "Strong phone, verbal and written communication skills, along with active listening",
-        "Customer focus and adaptability to different personality types",
-        "Demonstrating effective people skills and sensitivities when dealing with others",
-        "Ability to work both independently and in a team environment"
-      ],
-      requirements: [
-        "1 to 3 Years of experience from Mutual fund and transfer agency process or Finance",
-        "Shift time - 5:30 PM to 6:30 AM",
-        "Ready to work in night shifts (5 days in a week)",
-        "Hybrid model - 3 days in a week",
-        "Excellent communication and interpersonal skills",
-        "Excellent knowledge of Customer Services, Global mindset (Desirable)"
-      ],
-      benefits: [
-        "A voice in the future of fintech",
-        "Always-on learning and development",
-        "Collaborative work environment",
-        "Opportunities to give back",
-        "Competitive salary and benefits"
-      ]
+      status: "saved"
     },
     {
-      id: 2,
+      id: "2",
       title: "Sr. Technical Architect - SCPO",
       company: "Blue Yonder",
       location: "Hyderabad, Telangana, India",
       timeAgo: "1 day ago",
-      type: "Full-time"
+      status: "saved"
     },
     {
-      id: 3,
+      id: "3",
       title: "Sr Technical Architect - (SCPO, Consulting)",
       company: "Blue Yonder",
       location: "Hyderabad, Telangana, India",
       timeAgo: "1 day ago",
-      type: "Full-time"
-    },
-    {
-      id: 4,
-      title: "Program Manager, Last Mile Analytics and Quality",
-      company: "Amazon",
-      location: "Hyderabad, Telangana, India",
-      timeAgo: "1 day ago",
-      type: "Full-time"
-    },
-    {
-      id: 5,
-      title: "Sr Analyst - Retail",
-      company: "Blue Yonder",
-      location: "Hyderabad, Telangana, India",
-      timeAgo: "1 day ago",
-      type: "Full-time"
-    },
-    {
-      id: 6,
-      title: "Sr Business Analyst - Sales Support",
-      company: "Blue Yonder",
-      location: "Hyderabad, Telangana, India",
-      timeAgo: "1 day ago",
-      type: "Full-time"
-    },
-    {
-      id: 7,
-      title: "Data Center Technicians",
-      company: "Microsoft",
-      location: "Hyderabad, Telangana, India",
-      timeAgo: "1 day ago",
-      type: "Full-time"
-    },
-    {
-      id: 8,
-      title: "Support Lead - PL/SQL, Unix Shell scripting & Monitoring",
-      company: "Blue Yonder",
-      location: "Hyderabad, Telangana, India",
-      timeAgo: "1 day ago",
-      type: "Full-time"
-    },
-    {
-      id: 9,
-      title: "Software Engineer II",
-      company: "Microsoft",
-      location: "Hyderabad, Telangana, India",
-      timeAgo: "1 day ago",
-      type: "Full-time"
-    },
-    {
-      id: 10,
-      title: "Technical Architect - BY SCPO/BY Demand & Fulfillment, Enterprise Sales Planning, Inventory Optimization, S&OP",
-      company: "Blue Yonder",
-      location: "Hyderabad, Telangana, India",
-      timeAgo: "1 day ago",
-      type: "Full-time"
+      status: "saved"
     }
-  ];
+  ]);
 
-  const selectedJobData = jobs[selectedJob];
+  const [newCompanyName, setNewCompanyName] = useState("");
+  const [draggedJob, setDraggedJob] = useState<string | null>(null);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  const savedJobs = jobs.filter(job => job.status === 'saved');
+  const appliedJobs = jobs.filter(job => job.status === 'applied');
+  const interviewJobs = jobs.filter(job => job.status === 'interview');
+  const rejectedJobs = jobs.filter(job => job.status === 'rejected');
+  const offerJobs = jobs.filter(job => job.status === 'offer');
+
+  const handleAddCompany = () => {
+    if (newCompanyName.trim()) {
+      const newJob: Job = {
+        id: Date.now().toString(),
+        title: "IT Intern",
+        company: newCompanyName,
+        location: "Remote",
+        timeAgo: "Just added",
+        status: "saved"
+      };
+      setJobs([...jobs, newJob]);
+      setNewCompanyName("");
+    }
+  };
+
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, jobId: string) => {
+    setDraggedJob(jobId);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>, newStatus: 'saved' | 'applied' | 'interview' | 'rejected' | 'offer') => {
+    e.preventDefault();
+    if (draggedJob) {
+      setJobs(jobs.map(job => 
+        job.id === draggedJob ? { ...job, status: newStatus } : job
+      ));
+      setDraggedJob(null);
+    }
+  };
+
+  const JobCard = ({ job, isDraggable = false }: { job: Job; isDraggable?: boolean }) => (
+    <Card 
+      className={`mb-3 ${isDraggable ? 'cursor-move hover:shadow-md transition-shadow' : ''}`}
+      draggable={isDraggable}
+      onDragStart={(e) => isDraggable && handleDragStart(e, job.id)}
+    >
+      <CardContent className="p-4">
+        <h3 className="font-medium text-sm mb-1">{job.title}</h3>
+        <p className="text-sm text-blue-600 font-medium mb-1">{job.company}</p>
+        <p className="text-xs text-muted-foreground mb-2">{job.location}</p>
+        <p className="text-xs text-muted-foreground">{job.timeAgo}</p>
+      </CardContent>
+    </Card>
+  );
+
+  const DropZone = ({ 
+    status, 
+    title, 
+    count, 
+    description, 
+    children 
+  }: { 
+    status: 'saved' | 'applied' | 'interview' | 'rejected' | 'offer';
+    title: string;
+    count?: number;
+    description: string;
+    children: React.ReactNode;
+  }) => (
+    <div 
+      className={`h-full border-2 border-dashed border-gray-200 rounded-lg p-4 transition-colors ${
+        draggedJob ? 'border-blue-300 bg-blue-50' : ''
+      }`}
+      onDragOver={handleDragOver}
+      onDrop={(e) => handleDrop(e, status)}
+    >
+      <div className="flex items-center gap-2 mb-2">
+        <h2 className="text-lg font-semibold">{title}</h2>
+        {count !== undefined && (
+          <Badge variant="secondary" className="rounded-full">
+            {count}
+          </Badge>
+        )}
+      </div>
+      <div className="text-sm text-muted-foreground mb-4">
+        {description}
+      </div>
+      {children}
+    </div>
+  );
 
   return (
     <div className="flex h-full bg-background">
       {/* Left Sidebar - Jobs Search and List */}
-      <div className="w-96 border-r border-border bg-card flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b border-border">
-          <h1 className="text-2xl font-bold mb-1">Jobs</h1>
-          <p className="text-sm text-muted-foreground mb-4">Discover and apply to jobs</p>
-          
-          <div className="space-y-3">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search jobs by keyword" 
-                className="pl-10"
-              />
-            </div>
-            
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search for a city" 
-                className="pl-10"
-              />
-            </div>
-            
-            <div className="flex gap-2">
-              <Select>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Date" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="today">Today</SelectItem>
-                  <SelectItem value="week">This week</SelectItem>
-                  <SelectItem value="month">This month</SelectItem>
-                </SelectContent>
-              </Select>
-              
-              <Select>
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Any type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="fulltime">Full-time</SelectItem>
-                  <SelectItem value="parttime">Part-time</SelectItem>
-                  <SelectItem value="contract">Contract</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <Button variant="link" className="text-sm p-0 h-auto text-primary">
-                Clear all
-              </Button>
-              <Button className="px-6">
-                Search
-              </Button>
-            </div>
-          </div>
+      <div className={`border-r border-border bg-card flex flex-col transition-all duration-300 ${
+        isSidebarCollapsed ? 'w-12' : 'w-96'
+      }`}>
+        {/* Collapse/Expand Button */}
+        <div className="p-2 border-b border-border flex justify-end">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="h-8 w-8"
+          >
+            {isSidebarCollapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </Button>
         </div>
 
-        {/* Job Listings */}
-        <div className="flex-1 overflow-y-auto">
-          {jobs.map((job, index) => (
-            <div 
-              key={job.id} 
-              className={`p-4 border-b border-border cursor-pointer hover:bg-accent/50 transition-colors ${
-                selectedJob === index ? 'bg-accent' : ''
-              }`}
-              onClick={() => setSelectedJob(index)}
-            >
-              <div className="space-y-2">
-                <h3 className="font-medium text-sm leading-tight">{job.title}</h3>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-primary">{job.company}</p>
-                  <p className="text-xs text-muted-foreground">{job.location}</p>
+        {!isSidebarCollapsed && (
+          <>
+            {/* Header */}
+            <div className="p-4 border-b border-border">
+              <h1 className="text-2xl font-bold mb-1">Jobs</h1>
+              <p className="text-sm text-muted-foreground mb-4">Discover and apply to jobs</p>
+              
+              <div className="space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Search jobs by keyword" 
+                    className="pl-10"
+                  />
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {job.timeAgo}
+                
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Search for a city" 
+                    className="pl-10"
+                  />
+                </div>
+                
+                <div className="flex gap-2">
+                  <Select>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Date" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="today">Date</SelectItem>
+                      <SelectItem value="week">This week</SelectItem>
+                      <SelectItem value="month">This month</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Select>
+                    <SelectTrigger className="flex-1">
+                      <SelectValue placeholder="Any type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="any">Any type</SelectItem>
+                      <SelectItem value="fulltime">Full-time</SelectItem>
+                      <SelectItem value="parttime">Part-time</SelectItem>
+                      <SelectItem value="contract">Contract</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="flex justify-between items-center">
+                  <Button variant="link" className="text-sm p-0 h-auto text-blue-600">
+                    Clear all
+                  </Button>
+                  <Button className="px-6 bg-blue-600 hover:bg-blue-700">
+                    Search
+                  </Button>
                 </div>
               </div>
             </div>
-          ))}
-          
-          {/* Pagination */}
-          <div className="p-4 flex justify-center items-center space-x-2">
-            <Button variant="outline" size="sm" className="w-8 h-8 p-0">1</Button>
-            <Button variant="ghost" size="sm" className="w-8 h-8 p-0">2</Button>
-            <Button variant="ghost" size="sm" className="w-8 h-8 p-0">3</Button>
-            <Button variant="ghost" size="sm" className="w-8 h-8 p-0">→</Button>
-          </div>
-        </div>
+
+            {/* Job Listings */}
+            <div className="flex-1 overflow-y-auto">
+              <div className="p-4 space-y-3">
+                {jobs.map((job) => (
+                  <JobCard key={job.id} job={job} />
+                ))}
+              </div>
+              
+              {/* Find more jobs link */}
+              <div className="p-4 border-t border-border">
+                <Button 
+                  variant="link" 
+                  className="text-blue-600 text-sm p-0 h-auto flex items-center gap-1"
+                >
+                  Find more jobs
+                  <ExternalLink className="h-3 w-3" />
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Main Content - Job Details */}
-      <div className="flex-1 overflow-y-auto">
-        {selectedJobData && (
-          <div className="p-6">
-            {/* Job Header */}
-            <div className="mb-6">
-              <h1 className="text-2xl font-bold mb-2">{selectedJobData.title}</h1>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                <span className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4" />
-                  {selectedJobData.location}
-                </span>
-                <span>{selectedJobData.type}</span>
-              </div>
-              
-              <div className="flex gap-2">
-                <Button className="px-6">Scan</Button>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Bookmark className="h-4 w-4" />
-                  Save Job
-                </Button>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Heart className="h-4 w-4" />
-                  Apply
-                </Button>
-              </div>
-            </div>
+      {/* Main Content - Job Tracker */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="border-b border-border p-6">
+          <h1 className="text-2xl font-bold">Job Tracker</h1>
+        </div>
 
-            {/* Job Details */}
-            <div className="space-y-6">
-              {/* Position Details */}
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <h3 className="font-semibold mb-2">Position Type</h3>
-                  <p className="text-sm">{selectedJobData.type}</p>
+        {/* Three Column Layout */}
+        <div className="flex-1 p-6">
+          <div className={`grid gap-6 h-full transition-all duration-300 ${
+            isSidebarCollapsed ? 'grid-cols-5' : 'grid-cols-4'
+          }`}>
+            {/* Saved Column */}
+            <DropZone
+              status="saved"
+              title="Saved"
+              count={savedJobs.length}
+              description="Jobs saved from our chrome extension or the scan report will appear here."
+            >
+              {/* Add Company Section */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center">
+                    <span className="text-xs text-gray-600 font-medium">LOW</span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">IT Intern</p>
+                    <p className="text-xs text-gray-500">Company Name</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Type Of Hire</h3>
-                  <p className="text-sm">Experienced (relevant combo of work and education)</p>
+                
+                <div className="flex items-center gap-2">
+                  <Input
+                    placeholder="Add company name"
+                    value={newCompanyName}
+                    onChange={(e) => setNewCompanyName(e.target.value)}
+                    className="text-sm flex-1"
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddCompany()}
+                  />
+                  <Button 
+                    size="sm" 
+                    onClick={handleAddCompany}
+                    className="shrink-0 text-blue-600 bg-white border border-blue-600 hover:bg-blue-50"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
                 </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Education Desired</h3>
-                  <p className="text-sm">Bachelor's Degree</p>
-                </div>
-                <div>
-                  <h3 className="font-semibold mb-2">Travel Percentage</h3>
-                  <p className="text-sm">0%</p>
-                </div>
-              </div>
-
-              {/* Job Description */}
-              {selectedJobData.description && (
-                <div>
-                  <h3 className="font-semibold mb-3">Job Description</h3>
-                  <p className="text-sm leading-relaxed mb-4">{selectedJobData.description}</p>
-                </div>
-              )}
-
-              {/* About The Team */}
-              {selectedJobData.aboutTeam && (
-                <div>
-                  <h3 className="font-semibold mb-3">About The Team</h3>
-                  <p className="text-sm leading-relaxed">{selectedJobData.aboutTeam}</p>
-                </div>
-              )}
-
-              {/* What You Will Be Doing */}
-              {selectedJobData.responsibilities && (
-                <div>
-                  <h3 className="font-semibold mb-3">What You Will Be Doing</h3>
-                  <ul className="text-sm space-y-2">
-                    {selectedJobData.responsibilities.map((item, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="text-primary mt-1">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* What You Bring */}
-              {selectedJobData.requirements && (
-                <div>
-                  <h3 className="font-semibold mb-3">What You Bring</h3>
-                  <ul className="text-sm space-y-2">
-                    {selectedJobData.requirements.map((item, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="text-primary mt-1">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* What We Offer You */}
-              {selectedJobData.benefits && (
-                <div>
-                  <h3 className="font-semibold mb-3">What We Offer You</h3>
-                  <p className="text-sm leading-relaxed mb-3">
-                    A career at FIS is more than just a job. It's the chance to shape the future of fintech. At FIS, we offer you:
-                  </p>
-                  <ul className="text-sm space-y-2">
-                    {selectedJobData.benefits.map((item, index) => (
-                      <li key={index} className="flex items-start gap-2">
-                        <span className="text-primary mt-1">•</span>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Privacy Statement */}
-              <div>
-                <h3 className="font-semibold mb-3">Privacy Statement</h3>
-                <p className="text-sm leading-relaxed">
-                  FIS is committed to protecting the privacy and security of all personal information that we process in order to provide services to our clients. For specific information on how FIS protects personal information online, please see the Online Privacy Notice.
-                </p>
               </div>
 
-              {/* Sourcing Model */}
-              <div>
-                <h3 className="font-semibold mb-3">Sourcing Model</h3>
-                <p className="text-sm leading-relaxed">
-                  Recruitment at FIS works primarily on a direct sourcing model; a relatively small portion of our hiring is through recruitment agencies. FIS does not accept resumes from recruitment agencies which are not on the preferred supplier list and is not responsible for any related fees for resumes submitted to job postings, our employees, or any other part of our company.
-                </p>
+              {/* Saved Jobs */}
+              <div className="space-y-3">
+                {savedJobs.map((job) => (
+                  <JobCard key={job.id} job={job} isDraggable />
+                ))}
               </div>
+            </DropZone>
 
-              <div className="text-xs text-muted-foreground pt-4 border-t">
-                #LI-dnp4pass
+            {/* Applied Column */}
+            <DropZone
+              status="applied"
+              title="Applied"
+              description="Application completed. Awaiting response from employer or recruiter."
+            >
+              <div className="space-y-3">
+                {appliedJobs.map((job) => (
+                  <JobCard key={job.id} job={job} isDraggable />
+                ))}
+                {appliedJobs.length === 0 && (
+                  <div className="flex items-center justify-center h-40 text-gray-400">
+                    <p className="text-sm">No applications yet</p>
+                  </div>
+                )}
               </div>
-            </div>
+            </DropZone>
+
+            {/* Interview Column */}
+            <DropZone
+              status="interview"
+              title="Interview"
+              description="Invited to interview? Record the interview date and notes here."
+            >
+              <div className="space-y-3">
+                {interviewJobs.map((job) => (
+                  <JobCard key={job.id} job={job} isDraggable />
+                ))}
+                {interviewJobs.length === 0 && (
+                  <div className="flex items-center justify-center h-40 text-gray-400">
+                    <p className="text-sm">No interviews scheduled</p>
+                  </div>
+                )}
+              </div>
+            </DropZone>
+
+            {/* Rejected Column */}
+            <DropZone
+              status="rejected"
+              title="Rejected"
+              description="Applications that were not successful. Keep track for future reference."
+            >
+              <div className="space-y-3">
+                {rejectedJobs.map((job) => (
+                  <JobCard key={job.id} job={job} isDraggable />
+                ))}
+                {rejectedJobs.length === 0 && (
+                  <div className="flex items-center justify-center h-40 text-gray-400">
+                    <p className="text-sm">No rejections yet</p>
+                  </div>
+                )}
+              </div>
+            </DropZone>
+
+            {/* Fifth Column - Offer (only shown when sidebar is collapsed) */}
+            {isSidebarCollapsed && (
+              <DropZone
+                status="offer"
+                title="Offer"
+                description="Interview completed. Waiting for offer from the company."
+              >
+                <div className="space-y-3">
+                  {offerJobs.map((job) => (
+                    <JobCard key={job.id} job={job} isDraggable />
+                  ))}
+                  {offerJobs.length === 0 && (
+                    <div className="flex items-center justify-center h-40 text-gray-400">
+                      <p className="text-sm">No offers yet</p>
+                    </div>
+                  )}
+                </div>
+              </DropZone>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
