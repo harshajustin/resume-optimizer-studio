@@ -12,18 +12,13 @@ const Index = () => {
 
   return (
     <div className="flex h-screen bg-background">
-      {(activeItem === "job-tracker" || activeItem === "find-jobs") ? (
-        <JobTrackerPage />
-      ) : (
-        <>
-          <Sidebar activeItem={activeItem} onItemClick={handleItemClick} />
-          <main className="flex-1 overflow-y-auto">
-            {activeItem === "dashboard" && <Dashboard />}
-            {activeItem === "new-scan" && <Dashboard />}
-            {/* Other views can be added here */}
-          </main>
-        </>
-      )}
+      <Sidebar activeItem={activeItem} onItemClick={handleItemClick} />
+      <main className="flex-1 overflow-y-auto">
+        {activeItem === "dashboard" && <Dashboard />}
+        {activeItem === "new-scan" && <Dashboard />}
+        {(activeItem === "job-tracker" || activeItem === "find-jobs") && <JobTrackerPage />}
+        {/* Other views can be added here */}
+      </main>
     </div>
   );
 };

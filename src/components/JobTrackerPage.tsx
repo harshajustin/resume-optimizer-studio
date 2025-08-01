@@ -27,7 +27,7 @@ const JobTrackerPage = () => {
   ];
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-full bg-background">
       {/* Left Sidebar - Jobs Search */}
       <div className="w-80 border-r border-border bg-card">
         <div className="p-4 border-b border-border">
