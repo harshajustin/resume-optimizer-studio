@@ -5,7 +5,11 @@ import { Textarea } from "./ui/textarea";
 import { ArrowRight, Calendar, Star, Upload, Bookmark, Search, MapPin, X, FileText } from "lucide-react";
 import { useState, useRef } from "react";
 
-const Dashboard = () => {
+interface DashboardProps {
+  onNavigateToResults?: () => void;
+}
+
+const Dashboard = ({ onNavigateToResults }: DashboardProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -68,7 +72,7 @@ const Dashboard = () => {
       {/* Top Row - Three Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Latest Resume Scan */}
-        <Card>
+        <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={onNavigateToResults}>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">Latest Skill Match</CardTitle>
