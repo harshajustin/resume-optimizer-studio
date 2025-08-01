@@ -96,37 +96,37 @@ const ResumeManager = () => {
             </div>
             <div className="ml-8 flex-shrink-0">
               <div className="relative">
-                <div className="w-48 h-32 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <div className="w-48 h-32 bg-card border border-border rounded-lg p-4 shadow-sm">
                   <div className="flex items-center gap-2 mb-2">
                     <Star className="h-4 w-4 text-yellow-500 fill-current" />
-                    <span className="text-xs font-medium text-gray-600">My Base Resume</span>
+                    <span className="text-xs font-medium text-muted-foreground">My Base Resume</span>
                   </div>
                   <div className="space-y-1">
-                    <div className="h-2 bg-gray-200 rounded w-full"></div>
-                    <div className="h-2 bg-gray-200 rounded w-4/5"></div>
-                    <div className="h-2 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-2 bg-gray-200 rounded w-5/6"></div>
+                    <div className="h-2 bg-muted rounded w-full"></div>
+                    <div className="h-2 bg-muted rounded w-4/5"></div>
+                    <div className="h-2 bg-muted rounded w-3/4"></div>
+                    <div className="h-2 bg-muted rounded w-5/6"></div>
                   </div>
                   <div className="mt-4 space-y-1">
-                    <div className="h-1.5 bg-gray-200 rounded w-full"></div>
-                    <div className="h-1.5 bg-gray-200 rounded w-4/5"></div>
-                    <div className="h-1.5 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-1.5 bg-muted rounded w-full"></div>
+                    <div className="h-1.5 bg-muted rounded w-4/5"></div>
+                    <div className="h-1.5 bg-muted rounded w-3/4"></div>
                   </div>
                 </div>
                 
                 {/* Job Description overlay */}
-                <div className="absolute -top-2 -right-2 bg-white border border-gray-200 rounded p-2 shadow-sm">
-                  <div className="text-xs font-medium text-gray-600 mb-1">Job Description</div>
+                <div className="absolute -top-2 -right-2 bg-card border border-border rounded p-2 shadow-sm">
+                  <div className="text-xs font-medium text-muted-foreground mb-1">Job Description</div>
                   <div className="w-16 space-y-1">
-                    <div className="h-1 bg-gray-200 rounded w-full"></div>
-                    <div className="h-1 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-1 bg-gray-200 rounded w-4/5"></div>
+                    <div className="h-1 bg-muted rounded w-full"></div>
+                    <div className="h-1 bg-muted rounded w-3/4"></div>
+                    <div className="h-1 bg-muted rounded w-4/5"></div>
                   </div>
                 </div>
 
                 {/* Job Title overlay */}
-                <div className="absolute -bottom-2 left-4 bg-white border border-gray-200 rounded px-2 py-1 shadow-sm">
-                  <div className="text-xs text-gray-600">Job Title</div>
+                <div className="absolute -bottom-2 left-4 bg-card border border-border rounded px-2 py-1 shadow-sm">
+                  <div className="text-xs text-muted-foreground">Job Title</div>
                 </div>
               </div>
             </div>
@@ -162,7 +162,7 @@ const ResumeManager = () => {
                         className={`h-4 w-4 ${
                           resume.isStarred || resume.isBase 
                             ? 'text-yellow-500 fill-current' 
-                            : 'text-gray-300'
+                            : 'text-muted-foreground'
                         }`} 
                       />
                     </Button>

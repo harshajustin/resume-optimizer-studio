@@ -55,15 +55,15 @@ const ScanHistory = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Interview':
-        return "bg-blue-100 text-blue-800";
+        return "bg-primary/10 text-primary";
       case 'Applied':
         return "bg-green-100 text-green-800";
       case 'Saved':
-        return "bg-gray-100 text-gray-800";
+        return "bg-muted text-muted-foreground";
       case 'Rejected':
         return "bg-red-100 text-red-800";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-muted text-muted-foreground";
     }
   };
 
@@ -141,7 +141,7 @@ const ScanHistory = () => {
                   
                   <TableCell>
                     <div className="space-y-1">
-                      <div className="font-medium text-blue-600">{record.companyName}</div>
+                      <div className="font-medium text-primary">{record.companyName}</div>
                       <div className="text-sm text-muted-foreground">{record.jobTitle}</div>
                     </div>
                   </TableCell>

@@ -53,13 +53,13 @@ const Dashboard = () => {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Welcome, Harsha!</h1>
+        <h1 className="text-3xl font-bold text-foreground">Welcome, Harsha!</h1>
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <Star className="h-4 w-4 text-yellow-500" />
+          <Star className="h-4 w-4 text-warning" />
           <span>Try 2 weeks Premium</span>
           <Button variant="ghost" size="icon">
             <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-              <span className="text-xs">H</span>
+              <span className="text-xs text-muted-foreground">H</span>
             </div>
           </Button>
         </div>
@@ -132,8 +132,8 @@ const Dashboard = () => {
           <CardContent>
             <div className="space-y-4">
               <div className="text-center">
-                <div className="w-16 h-16 bg-blue-50 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Calendar className="h-8 w-8 text-blue-500" />
+                <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <Calendar className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="font-medium mb-1">Next Interview</h3>
                 <p className="text-sm text-muted-foreground">No upcoming interviews</p>
@@ -174,8 +174,8 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-medium">Resume</h3>
-                <Button variant="link" className="p-0 h-auto text-blue-600 text-sm">
+                <h3 className="font-medium text-foreground">Resume</h3>
+                <Button variant="link" className="p-0 h-auto text-primary text-sm">
                   <Star className="h-4 w-4 mr-1" />
                   Saved Resumes
                 </Button>
@@ -185,16 +185,16 @@ const Dashboard = () => {
                 <div 
                   className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
                     isDragging 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-border hover:border-blue-400 hover:bg-blue-50/50'
+                      ? 'border-primary bg-primary/10' 
+                      : 'border-border hover:border-primary/50 hover:bg-primary/5'
                   }`}
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={handleUploadClick}
                 >
-                  <Upload className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-                  <p className="text-sm text-blue-600 font-medium mb-1">
+                  <Upload className="h-8 w-8 text-primary mx-auto mb-3" />
+                  <p className="text-sm text-primary font-medium mb-1">
                     Drag & Drop or Upload
                   </p>
                   <p className="text-xs text-muted-foreground">
@@ -209,13 +209,13 @@ const Dashboard = () => {
                   />
                 </div>
               ) : (
-                <div className="border-2 border-green-200 bg-green-50 rounded-lg p-4">
+                <div className="border-2 border-success/50 bg-success/10 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                      <FileText className="h-8 w-8 text-green-600" />
+                      <FileText className="h-8 w-8 text-success" />
                       <div>
-                        <p className="font-medium text-sm text-green-800">{uploadedFile.name}</p>
-                        <p className="text-xs text-green-600">
+                        <p className="font-medium text-sm text-success">{uploadedFile.name}</p>
+                        <p className="text-xs text-success/70">
                           {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
                         </p>
                       </div>
@@ -245,7 +245,7 @@ const Dashboard = () => {
 
           <div className="flex items-center justify-between mt-6">
             <div className="text-sm text-muted-foreground">
-              Available scans: 4 · <Button variant="link" className="p-0 h-auto text-blue-600">Upgrade</Button>
+              Available scans: 4 · <Button variant="link" className="p-0 h-auto text-primary">Upgrade</Button>
             </div>
             <Button size="lg" className="px-8">
               Scan
@@ -262,7 +262,7 @@ const Dashboard = () => {
               <CardTitle className="text-xl">Jobs</CardTitle>
               <p className="text-sm text-muted-foreground">Discover and apply to jobs</p>
             </div>
-            <Button variant="link" className="text-blue-600">
+            <Button variant="link" className="text-primary">
               View all →
             </Button>
           </div>
@@ -288,7 +288,7 @@ const Dashboard = () => {
               <Card className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <h3 className="font-medium text-sm mb-2">Financial Services Account Associate II</h3>
-                  <p className="text-sm text-blue-600 font-medium mb-1">FIS</p>
+                  <p className="text-sm text-primary font-medium mb-1">FIS</p>
                   <p className="text-xs text-muted-foreground mb-2">Greater Hyderabad Area</p>
                   <p className="text-xs text-muted-foreground mb-3">1 day ago</p>
                   <div className="flex gap-2">
@@ -302,7 +302,7 @@ const Dashboard = () => {
               <Card className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <h3 className="font-medium text-sm mb-2">Sr. Technical Architect - SCPO</h3>
-                  <p className="text-sm text-blue-600 font-medium mb-1">Blue Yonder</p>
+                  <p className="text-sm text-primary font-medium mb-1">Blue Yonder</p>
                   <p className="text-xs text-muted-foreground mb-2">Hyderabad, Telangana, India</p>
                   <p className="text-xs text-muted-foreground mb-3">1 day ago</p>
                   <div className="flex gap-2">
@@ -316,7 +316,7 @@ const Dashboard = () => {
               <Card className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <h3 className="font-medium text-sm mb-2">Sr Technical Architect - (SCPO, Consulting)</h3>
-                  <p className="text-sm text-blue-600 font-medium mb-1">Blue Yonder</p>
+                  <p className="text-sm text-primary font-medium mb-1">Blue Yonder</p>
                   <p className="text-xs text-muted-foreground mb-2">Hyderabad, Telangana, India</p>
                   <p className="text-xs text-muted-foreground mb-3">1 day ago</p>
                   <div className="flex gap-2">
@@ -330,7 +330,7 @@ const Dashboard = () => {
               <Card className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <h3 className="font-medium text-sm mb-2">Program Manager, Last Mile Analytics and Quality</h3>
-                  <p className="text-sm text-blue-600 font-medium mb-1">Amazon</p>
+                  <p className="text-sm text-primary font-medium mb-1">Amazon</p>
                   <p className="text-xs text-muted-foreground mb-2">Hyderabad, Telangana, India</p>
                   <p className="text-xs text-muted-foreground mb-3">1 day ago</p>
                   <div className="flex gap-2">

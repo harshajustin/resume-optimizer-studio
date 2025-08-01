@@ -24,33 +24,33 @@ const Sidebar = ({ activeItem, onItemClick }: SidebarProps) => {
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { id: "linkedin-scan", label: "LinkedIn Scan", icon: LinkedinIcon },
     { id: "job-tracker", label: "Job Tracker", icon: Briefcase },
     { id: "find-jobs", label: "Find Jobs", icon: Search },
-    { id: "resume-builder", label: "Resume Builder", icon: FileText },
+    { id: "resume-builder", label: "Resume Templates", icon: FileText },
     { id: "resume-manager", label: "Resume Manager", icon: FolderOpen },
     { id: "scan-history", label: "Scan History", icon: History },
   ];
 
   return (
     <div className={cn(
-      "bg-card border-r border-border h-screen transition-all duration-300",
+      "bg-sidebar-background border-r border-sidebar-border h-screen transition-all duration-300",
       isCollapsed ? "w-16" : "w-64"
     )}>
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-sidebar-border">
         <div className="flex items-center justify-between">
           {!isCollapsed && (
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">J</span>
+              <div className="w-8 h-8 bg-sidebar-primary rounded flex items-center justify-center">
+                <span className="text-sidebar-primary-foreground font-bold text-sm">J</span>
               </div>
-              <span className="font-semibold text-lg">Jobscan</span>
+              <span className="font-semibold text-lg text-sidebar-foreground">Jobscan</span>
             </div>
           )}
           <Button 
             variant="ghost" 
             size="icon"
             onClick={() => setIsCollapsed(!isCollapsed)}
+            className="text-sidebar-foreground hover:bg-sidebar-accent"
           >
             <Menu className="h-4 w-4" />
           </Button>
@@ -60,7 +60,7 @@ const Sidebar = ({ activeItem, onItemClick }: SidebarProps) => {
       <div className="flex-1 overflow-y-auto">
         <div className="p-2">
           <Button 
-            className="w-full mb-4"
+            className="w-full mb-4 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
             onClick={() => onItemClick("new-scan")}
           >
             {!isCollapsed && "New Scan"}
@@ -76,8 +76,9 @@ const Sidebar = ({ activeItem, onItemClick }: SidebarProps) => {
                 key={item.id}
                 variant={activeItem === item.id ? "secondary" : "ghost"}
                 className={cn(
-                  "w-full justify-start mb-1",
-                  isCollapsed && "px-2"
+                  "w-full justify-start mb-1 text-sidebar-foreground",
+                  isCollapsed && "px-2",
+                  activeItem === item.id ? "bg-sidebar-accent text-sidebar-accent-foreground" : "hover:bg-sidebar-accent/50"
                 )}
                 onClick={() => onItemClick(item.id)}
               >
@@ -89,11 +90,11 @@ const Sidebar = ({ activeItem, onItemClick }: SidebarProps) => {
         </nav>
       </div>
 
-      <div className="p-2 border-t border-border">
+      <div className="p-2 border-t border-sidebar-border">
         <Button
           variant="ghost"
           className={cn(
-            "w-full justify-start",
+            "w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent/50",
             isCollapsed && "px-2"
           )}
         >

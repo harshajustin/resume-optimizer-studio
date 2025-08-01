@@ -7,7 +7,7 @@ const LinkedInReport = () => {
     <Card>
       <CardHeader>
         <CardTitle className="text-lg flex items-center space-x-2">
-          <LinkedinIcon className="h-5 w-5 text-blue-600" />
+          <LinkedinIcon className="h-5 w-5 text-primary" />
           <span>LinkedIn Report</span>
         </CardTitle>
       </CardHeader>

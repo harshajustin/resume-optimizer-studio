@@ -96,7 +96,7 @@ const JobTrackerPage = () => {
     >
       <CardContent className="p-4">
         <h3 className="font-medium text-sm mb-1">{job.title}</h3>
-        <p className="text-sm text-blue-600 font-medium mb-1">{job.company}</p>
+        <p className="text-sm text-primary font-medium mb-1">{job.company}</p>
         <p className="text-xs text-muted-foreground mb-2">{job.location}</p>
         <p className="text-xs text-muted-foreground">{job.timeAgo}</p>
       </CardContent>
@@ -115,28 +115,47 @@ const JobTrackerPage = () => {
     count?: number;
     description: string;
     children: React.ReactNode;
-  }) => (
-    <div 
-      className={`h-full border-2 border-dashed border-gray-200 rounded-lg p-4 transition-colors ${
-        draggedJob ? 'border-blue-300 bg-blue-50' : ''
-      }`}
-      onDragOver={handleDragOver}
-      onDrop={(e) => handleDrop(e, status)}
-    >
-      <div className="flex items-center gap-2 mb-2">
-        <h2 className="text-lg font-semibold">{title}</h2>
-        {count !== undefined && (
-          <Badge variant="secondary" className="rounded-full">
-            {count}
-          </Badge>
-        )}
+  }) => {
+    const getColumnStyles = (status: string) => {
+      switch (status) {
+        case 'saved':
+          return 'bg-slate-50 border-slate-200';
+        case 'applied':
+          return 'bg-blue-50 border-blue-200';
+        case 'interview':
+          return 'bg-amber-50 border-amber-200';
+        case 'rejected':
+          return 'bg-red-50 border-red-200';
+        case 'offer':
+          return 'bg-green-50 border-green-200';
+        default:
+          return 'bg-background border-border';
+      }
+    };
+
+    return (
+      <div 
+        className={`h-full border-2 border-dashed rounded-lg p-4 transition-colors ${
+          getColumnStyles(status)
+        } ${draggedJob ? 'border-primary/50 bg-primary/5' : ''}`}
+        onDragOver={handleDragOver}
+        onDrop={(e) => handleDrop(e, status)}
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <h2 className="text-lg font-semibold">{title}</h2>
+          {count !== undefined && (
+            <Badge variant="secondary" className="rounded-full">
+              {count}
+            </Badge>
+          )}
+        </div>
+        <div className="text-sm text-muted-foreground mb-4">
+          {description}
+        </div>
+        {children}
       </div>
-      <div className="text-sm text-muted-foreground mb-4">
-        {description}
-      </div>
-      {children}
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="flex h-screen w-full bg-background">
@@ -210,10 +229,10 @@ const JobTrackerPage = () => {
                 </div>
                 
                 <div className="flex justify-between items-center">
-                  <Button variant="link" className="text-sm p-0 h-auto text-blue-600">
+                  <Button variant="link" className="text-sm p-0 h-auto text-primary">
                     Clear all
                   </Button>
-                  <Button className="px-6 bg-blue-600 hover:bg-blue-700">
+                  <Button className="px-6">
                     Search
                   </Button>
                 </div>
@@ -232,7 +251,7 @@ const JobTrackerPage = () => {
               <div className="p-4 border-t border-border">
                 <Button 
                   variant="link" 
-                  className="text-blue-600 text-sm p-0 h-auto flex items-center gap-1"
+                  className="text-primary text-sm p-0 h-auto flex items-center gap-1"
                 >
                   Find more jobs
                   <ExternalLink className="h-3 w-3" />
@@ -263,14 +282,14 @@ const JobTrackerPage = () => {
                   description="Jobs saved from our chrome extension or the scan report will appear here."
                 >
                   {/* Add Company Section */}
-                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                  <div className="bg-secondary border border-border rounded-lg p-4 mb-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 bg-gray-200 rounded flex items-center justify-center">
-                        <span className="text-xs text-gray-600 font-medium">LOW</span>
+                      <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
+                        <span className="text-xs text-muted-foreground font-medium">LOW</span>
                       </div>
                       <div>
                         <p className="text-sm font-medium">IT Intern</p>
-                        <p className="text-xs text-gray-500">Company Name</p>
+                        <p className="text-xs text-muted-foreground">Company Name</p>
                       </div>
                     </div>
                     
@@ -285,7 +304,8 @@ const JobTrackerPage = () => {
                       <Button 
                         size="sm" 
                         onClick={handleAddCompany}
-                        className="shrink-0 text-blue-600 bg-white border border-blue-600 hover:bg-blue-50"
+                        className="shrink-0"
+                        variant="outline"
                       >
                         <ArrowRight className="h-4 w-4" />
                       </Button>
@@ -313,7 +333,7 @@ const JobTrackerPage = () => {
                       <JobCard key={job.id} job={job} isDraggable />
                     ))}
                     {appliedJobs.length === 0 && (
-                      <div className="flex items-center justify-center h-40 text-gray-400">
+                      <div className="flex items-center justify-center h-40 text-muted-foreground">
                         <p className="text-sm">No applications yet</p>
                       </div>
                     )}
@@ -333,7 +353,7 @@ const JobTrackerPage = () => {
                       <JobCard key={job.id} job={job} isDraggable />
                     ))}
                     {interviewJobs.length === 0 && (
-                      <div className="flex items-center justify-center h-40 text-gray-400">
+                      <div className="flex items-center justify-center h-40 text-muted-foreground">
                         <p className="text-sm">No interviews scheduled</p>
                       </div>
                     )}
@@ -353,7 +373,7 @@ const JobTrackerPage = () => {
                       <JobCard key={job.id} job={job} isDraggable />
                     ))}
                     {rejectedJobs.length === 0 && (
-                      <div className="flex items-center justify-center h-40 text-gray-400">
+                      <div className="flex items-center justify-center h-40 text-muted-foreground">
                         <p className="text-sm">No rejections yet</p>
                       </div>
                     )}
@@ -373,7 +393,7 @@ const JobTrackerPage = () => {
                       <JobCard key={job.id} job={job} isDraggable />
                     ))}
                     {offerJobs.length === 0 && (
-                      <div className="flex items-center justify-center h-40 text-gray-400">
+                      <div className="flex items-center justify-center h-40 text-muted-foreground">
                         <p className="text-sm">No offers yet</p>
                       </div>
                     )}
