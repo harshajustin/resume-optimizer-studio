@@ -22,7 +22,14 @@ export default defineConfig(({ mode }) => ({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: mode === 'development',
+    sourcemap: false, // Disable sourcemaps in production
+    minify: mode === 'production' ? 'terser' : false,
+    terserOptions: mode === 'production' ? {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    } : undefined,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -35,5 +42,9 @@ export default defineConfig(({ mode }) => ({
   preview: {
     port: 8080,
     host: "::",
+  },
+  define: {
+    // Ensure NODE_ENV is properly set
+    'process.env.NODE_ENV': JSON.stringify(mode === 'production' ? 'production' : 'development'),
   },
 }));

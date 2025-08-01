@@ -6,7 +6,7 @@ services:
     repo: harshajustin/resume-optimizer-studio
     branch: production
   run_command: npm run preview
-  build_command: npm install && npm run build
+  build_command: npm ci && npm run build:prod
   environment_slug: node-js
   instance_count: 1
   instance_size_slug: basic-xxs
@@ -16,4 +16,6 @@ services:
     http_path: /
   envs:
   - key: NODE_ENV
+    value: production
+  - key: VITE_NODE_ENV
     value: production
