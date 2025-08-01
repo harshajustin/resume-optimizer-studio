@@ -1,4 +1,4 @@
-name: resume-optimizer-studio
+name: skillmatch-ai
 services:
 - name: web
   source_dir: /

@@ -28,7 +28,7 @@ const Sidebar = ({ activeItem, onItemClick }: SidebarProps) => {
     { id: "find-jobs", label: "Find Jobs", icon: Search },
     { id: "resume-builder", label: "Resume Templates", icon: FileText },
     { id: "resume-manager", label: "Resume Manager", icon: FolderOpen },
-    { id: "scan-history", label: "Scan History", icon: History },
+    { id: "match-history", label: "Match History", icon: History },
   ];
 
   return (
@@ -41,9 +41,9 @@ const Sidebar = ({ activeItem, onItemClick }: SidebarProps) => {
           {!isCollapsed && (
             <div className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-sidebar-primary rounded flex items-center justify-center">
-                <span className="text-sidebar-primary-foreground font-bold text-sm">J</span>
+                <span className="text-sidebar-primary-foreground font-bold text-sm">S</span>
               </div>
-              <span className="font-semibold text-lg text-sidebar-foreground">Jobscan</span>
+              <span className="font-semibold text-lg text-sidebar-foreground">SkillMatch AI</span>
             </div>
           )}
           <Button 
@@ -61,9 +61,9 @@ const Sidebar = ({ activeItem, onItemClick }: SidebarProps) => {
         <div className="p-2">
           <Button 
             className="w-full mb-4 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
-            onClick={() => onItemClick("new-scan")}
+            onClick={() => onItemClick("new-match")}
           >
-            {!isCollapsed && "New Scan"}
+            {!isCollapsed && "New Match"}
             {isCollapsed && <FileText className="h-4 w-4" />}
           </Button>
         </div>

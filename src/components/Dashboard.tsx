@@ -53,7 +53,7 @@ const Dashboard = () => {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-foreground">Welcome, Harsha!</h1>
+        <h1 className="text-3xl font-bold text-foreground">Welcome to SkillMatch AI!</h1>
         <div className="flex items-center space-x-2 text-sm text-muted-foreground">
           <Star className="h-4 w-4 text-warning" />
           <span>Try 2 weeks Premium</span>
@@ -71,7 +71,7 @@ const Dashboard = () => {
         <Card>
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">Latest Resume Scan</CardTitle>
+              <CardTitle className="text-lg">Latest Skill Match</CardTitle>
               <ArrowRight className="h-4 w-4 text-muted-foreground" />
             </div>
           </CardHeader>
@@ -164,9 +164,9 @@ const Dashboard = () => {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl">New scan</CardTitle>
+            <CardTitle className="text-xl">New Skill Match</CardTitle>
             <Button variant="outline" size="sm">
-              View a Sample Scan
+              View a Sample Match
             </Button>
           </div>
         </CardHeader>
@@ -245,10 +245,10 @@ const Dashboard = () => {
 
           <div className="flex items-center justify-between mt-6">
             <div className="text-sm text-muted-foreground">
-              Available scans: 4 · <Button variant="link" className="p-0 h-auto text-primary">Upgrade</Button>
+              Available matches: 4 · <Button variant="link" className="p-0 h-auto text-primary">Upgrade</Button>
             </div>
             <Button size="lg" className="px-8">
-              Scan
+              Match Skills
             </Button>
           </div>
         </CardContent>
@@ -292,7 +292,7 @@ const Dashboard = () => {
                   <p className="text-xs text-muted-foreground mb-2">Greater Hyderabad Area</p>
                   <p className="text-xs text-muted-foreground mb-3">1 day ago</p>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="text-xs">Scan</Button>
+                    <Button size="sm" variant="outline" className="text-xs">Match Skills</Button>
                     <Button size="sm" variant="ghost" className="text-xs">Save</Button>
                   </div>
                 </CardContent>
@@ -306,7 +306,7 @@ const Dashboard = () => {
                   <p className="text-xs text-muted-foreground mb-2">Hyderabad, Telangana, India</p>
                   <p className="text-xs text-muted-foreground mb-3">1 day ago</p>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="text-xs">Scan</Button>
+                    <Button size="sm" variant="outline" className="text-xs">Match Skills</Button>
                     <Button size="sm" variant="ghost" className="text-xs">Save</Button>
                   </div>
                 </CardContent>
@@ -320,7 +320,7 @@ const Dashboard = () => {
                   <p className="text-xs text-muted-foreground mb-2">Hyderabad, Telangana, India</p>
                   <p className="text-xs text-muted-foreground mb-3">1 day ago</p>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="text-xs">Scan</Button>
+                    <Button size="sm" variant="outline" className="text-xs">Match Skills</Button>
                     <Button size="sm" variant="ghost" className="text-xs">Save</Button>
                   </div>
                 </CardContent>
@@ -334,7 +334,7 @@ const Dashboard = () => {
                   <p className="text-xs text-muted-foreground mb-2">Hyderabad, Telangana, India</p>
                   <p className="text-xs text-muted-foreground mb-3">1 day ago</p>
                   <div className="flex gap-2">
-                    <Button size="sm" variant="outline" className="text-xs">Scan</Button>
+                    <Button size="sm" variant="outline" className="text-xs">Match Skills</Button>
                     <Button size="sm" variant="ghost" className="text-xs">Save</Button>
                   </div>
                 </CardContent>

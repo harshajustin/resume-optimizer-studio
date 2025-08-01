@@ -90,8 +90,8 @@ const ResumeManager = () => {
             <div className="flex-1">
               <h2 className="text-lg font-semibold mb-2">Select a base resume to save time.</h2>
               <p className="text-sm text-muted-foreground mb-4">
-                Your base resume can be used by default for all new scans. Start with an 
-                established resume to save time on future scans.
+                Your base resume can be used by default for all new skill matches. Start with an 
+                established resume to save time on future matches.
               </p>
             </div>
             <div className="ml-8 flex-shrink-0">

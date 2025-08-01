@@ -7,14 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Search, ArrowUpDown, Archive, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
-interface ScanRecord {
+interface MatchRecord {
   id: string;
   score: number;
   companyName: string;
   jobTitle: string;
   jobDescription: string;
   progressStatus: 'Interview' | 'Applied' | 'Saved' | 'Rejected';
-  scanDate: string;
+  matchDate: string;
   isArchived: boolean;
 }
 
@@ -22,7 +22,7 @@ const ScanHistory = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showArchived, setShowArchived] = useState(false);
   const [sortBy, setSortBy] = useState("date");
-  const [scanRecords] = useState<ScanRecord[]>([
+  const [matchRecords] = useState<MatchRecord[]>([
     {
       id: "1",
       score: 40,
@@ -30,12 +30,12 @@ const ScanHistory = () => {
       jobTitle: "IT Intern",
       jobDescription: "JOB SUMMARY: IT Intern role is primarily involves performing routine assignments under close supervision...",
       progressStatus: "Interview",
-      scanDate: "Aug 1, 2025",
+      matchDate: "Aug 1, 2025",
       isArchived: false
     }
   ]);
 
-  const filteredRecords = scanRecords.filter(record => {
+  const filteredRecords = matchRecords.filter(record => {
     const matchesSearch = 
       record.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       record.jobTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -82,7 +82,7 @@ const ScanHistory = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Scan History</h1>
+          <h1 className="text-2xl font-bold">Match History</h1>
         </div>
         
         <div className="flex items-center gap-4">
@@ -167,7 +167,7 @@ const ScanHistory = () => {
                   </TableCell>
                   
                   <TableCell className="text-center text-sm text-muted-foreground">
-                    {record.scanDate}
+                    {record.matchDate}
                   </TableCell>
                   
                   <TableCell className="text-center">

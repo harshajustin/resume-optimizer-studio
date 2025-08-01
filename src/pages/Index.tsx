@@ -18,10 +18,12 @@ const Index = () => {
       <Sidebar activeItem={activeItem} onItemClick={handleItemClick} />
       <main className="flex-1 overflow-y-auto">
         {activeItem === "dashboard" && <Dashboard />}
+        {activeItem === "new-match" && <Dashboard />}
         {activeItem === "new-scan" && <Dashboard />}
         {activeItem === "job-tracker" && <JobTrackerPage />}
         {activeItem === "find-jobs" && <FindJobs />}
         {activeItem === "resume-manager" && <ResumeManager />}
+        {activeItem === "match-history" && <ScanHistory />}
         {activeItem === "scan-history" && <ScanHistory />}
         {/* Other views can be added here */}
       </main>

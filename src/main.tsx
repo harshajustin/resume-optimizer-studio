@@ -14,7 +14,7 @@ rootElement.innerHTML = `
   <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: Arial, sans-serif;">
     <div style="text-align: center;">
       <div style="border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 0 auto 20px;"></div>
-      <p>Loading Resume Optimizer Studio...</p>
+      <p>Loading SkillMatch AI...</p>
     </div>
   </div>
   <style>

@@ -1,6 +1,6 @@
-# Resume Optimizer Studio
+# SkillMatch AI
 
-A modern web application for optimizing resumes and tracking job applications, built with React, TypeScript, and Tailwind CSS.
+Bridge your resume with job skill needs - A modern web application for optimizing resumes and tracking job applications, built with React, TypeScript, and Tailwind CSS.
 
 ## 🚀 Live Demo
 **Deployed on DigitalOcean App Platform**: [Your App URL]
@@ -33,7 +33,7 @@ This project is configured for deployment on DigitalOcean App Platform:
 ### Environment Variables
 ```env
 NODE_ENV=production
-VITE_APP_TITLE="Resume Optimizer Studio"
+VITE_APP_TITLE="SkillMatch AI"
 VITE_APP_VERSION="1.0.0"
 ```
 

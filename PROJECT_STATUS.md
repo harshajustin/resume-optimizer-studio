@@ -1,4 +1,6 @@
-# Resume Optimizer Studio - Project Status & Roadmap
+# SkillMatch AI - Project Status & Roadmap
+
+**Bridge your resume with job skill needs**
 
 ## 📋 Current Project Status
 

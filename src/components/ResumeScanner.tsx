@@ -12,9 +12,9 @@ const ResumeScanner = () => {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl">New scan</CardTitle>
+          <CardTitle className="text-xl">New Skill Match</CardTitle>
           <Button variant="outline" size="sm">
-            View a Sample Scan
+            View a Sample Match
           </Button>
         </div>
       </CardHeader>
@@ -58,14 +58,14 @@ const ResumeScanner = () => {
 
         <div className="flex items-center justify-between mt-6">
           <div className="text-sm text-muted-foreground">
-            Available scans: 4 · <Button variant="link" className="p-0 h-auto text-primary">Upgrade</Button>
+            Available matches: 4 · <Button variant="link" className="p-0 h-auto text-primary">Upgrade</Button>
           </div>
           <Button 
             size="lg"
             disabled={!resumeText || !jobDescription}
             className="px-8"
           >
-            Scan
+            Match Skills
           </Button>
         </div>
       </CardContent>

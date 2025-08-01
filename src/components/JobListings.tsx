@@ -111,7 +111,7 @@ const JobListings = () => {
                       <span className="text-xs text-muted-foreground">{job.timeAgo}</span>
                       <div className="flex gap-1">
                         <Button size="sm" variant="outline" className="h-7 px-2 text-xs">
-                          Scan
+                          Match Skills
                         </Button>
                         <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
                           <Bookmark className="h-3 w-3" />
