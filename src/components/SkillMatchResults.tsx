@@ -73,10 +73,6 @@ const SkillMatchResults = ({ onBack }: SkillMatchResultsProps) => {
         </div>
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-          <Button variant="outline" size="sm">
             <RefreshCw className="h-4 w-4 mr-2" />
             Re-analyze
           </Button>

@@ -135,7 +135,7 @@ const JobTrackerPage = () => {
 
     return (
       <div 
-        className={`h-full border-2 border-dashed rounded-lg p-4 transition-colors ${
+        className={`h-full border-2 border-dashed rounded-lg p-4 transition-colors flex flex-col ${
           getColumnStyles(status)
         } ${draggedJob ? 'border-primary/50 bg-primary/5' : ''}`}
         onDragOver={handleDragOver}
@@ -152,7 +152,9 @@ const JobTrackerPage = () => {
         <div className="text-sm text-muted-foreground mb-4">
           {description}
         </div>
-        {children}
+        <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border/90 hover:scrollbar-thumb-border/50 scrollbar-thumb-rounded-full">
+          {children}
+        </div>
       </div>
     );
   };
@@ -240,7 +242,7 @@ const JobTrackerPage = () => {
             </div>
 
             {/* Job Listings */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border/30 hover:scrollbar-thumb-border/50 scrollbar-thumb-rounded-full">
               <div className="p-4 space-y-3">
                 {jobs.map((job) => (
                   <JobCard key={job.id} job={job} />
@@ -281,42 +283,44 @@ const JobTrackerPage = () => {
                   count={savedJobs.length}
                   description="Jobs saved from our chrome extension or the scan report will appear here."
                 >
-                  {/* Add Company Section */}
-                  <div className="bg-secondary border border-border rounded-lg p-4 mb-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
-                        <span className="text-xs text-muted-foreground font-medium">LOW</span>
+                  <div>
+                    {/* Add Company Section */}
+                    <div className="bg-secondary border border-border rounded-lg p-4 mb-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
+                          <span className="text-xs text-muted-foreground font-medium">LOW</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">IT Intern</p>
+                          <p className="text-xs text-muted-foreground">Company Name</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">IT Intern</p>
-                        <p className="text-xs text-muted-foreground">Company Name</p>
+                      
+                      <div className="flex items-center gap-2">
+                        <Input
+                          placeholder="Add company name"
+                          value={newCompanyName}
+                          onChange={(e) => setNewCompanyName(e.target.value)}
+                          className="text-sm flex-1"
+                          onKeyPress={(e) => e.key === 'Enter' && handleAddCompany()}
+                        />
+                        <Button 
+                          size="sm" 
+                          onClick={handleAddCompany}
+                          className="shrink-0"
+                          variant="outline"
+                        >
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <Input
-                        placeholder="Add company name"
-                        value={newCompanyName}
-                        onChange={(e) => setNewCompanyName(e.target.value)}
-                        className="text-sm flex-1"
-                        onKeyPress={(e) => e.key === 'Enter' && handleAddCompany()}
-                      />
-                      <Button 
-                        size="sm" 
-                        onClick={handleAddCompany}
-                        className="shrink-0"
-                        variant="outline"
-                      >
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
 
-                  {/* Saved Jobs */}
-                  <div className="space-y-3">
-                    {savedJobs.map((job) => (
-                      <JobCard key={job.id} job={job} isDraggable />
-                    ))}
+                    {/* Saved Jobs */}
+                    <div className="space-y-3">
+                      {savedJobs.map((job) => (
+                        <JobCard key={job.id} job={job} isDraggable />
+                      ))}
+                    </div>
                   </div>
                 </DropZone>
               </div>
@@ -328,15 +332,17 @@ const JobTrackerPage = () => {
                   title="Applied"
                   description="Application completed. Awaiting response from employer or recruiter."
                 >
-                  <div className="space-y-3">
-                    {appliedJobs.map((job) => (
-                      <JobCard key={job.id} job={job} isDraggable />
-                    ))}
-                    {appliedJobs.length === 0 && (
-                      <div className="flex items-center justify-center h-40 text-muted-foreground">
-                        <p className="text-sm">No applications yet</p>
-                      </div>
-                    )}
+                  <div>
+                    <div className="space-y-3">
+                      {appliedJobs.map((job) => (
+                        <JobCard key={job.id} job={job} isDraggable />
+                      ))}
+                      {appliedJobs.length === 0 && (
+                        <div className="flex items-center justify-center h-40 text-muted-foreground">
+                          <p className="text-sm">No applications yet</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </DropZone>
               </div>
@@ -348,15 +354,17 @@ const JobTrackerPage = () => {
                   title="Interview"
                   description="Invited to interview? Record the interview date and notes here."
                 >
-                  <div className="space-y-3">
-                    {interviewJobs.map((job) => (
-                      <JobCard key={job.id} job={job} isDraggable />
-                    ))}
-                    {interviewJobs.length === 0 && (
-                      <div className="flex items-center justify-center h-40 text-muted-foreground">
-                        <p className="text-sm">No interviews scheduled</p>
-                      </div>
-                    )}
+                  <div>
+                    <div className="space-y-3">
+                      {interviewJobs.map((job) => (
+                        <JobCard key={job.id} job={job} isDraggable />
+                      ))}
+                      {interviewJobs.length === 0 && (
+                        <div className="flex items-center justify-center h-40 text-muted-foreground">
+                          <p className="text-sm">No interviews scheduled</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </DropZone>
               </div>
@@ -368,15 +376,17 @@ const JobTrackerPage = () => {
                   title="Rejected"
                   description="Applications that were not successful. Keep track for future reference."
                 >
-                  <div className="space-y-3">
-                    {rejectedJobs.map((job) => (
-                      <JobCard key={job.id} job={job} isDraggable />
-                    ))}
-                    {rejectedJobs.length === 0 && (
-                      <div className="flex items-center justify-center h-40 text-muted-foreground">
-                        <p className="text-sm">No rejections yet</p>
-                      </div>
-                    )}
+                  <div>
+                    <div className="space-y-3">
+                      {rejectedJobs.map((job) => (
+                        <JobCard key={job.id} job={job} isDraggable />
+                      ))}
+                      {rejectedJobs.length === 0 && (
+                        <div className="flex items-center justify-center h-40 text-muted-foreground">
+                          <p className="text-sm">No rejections yet</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </DropZone>
               </div>
@@ -388,15 +398,17 @@ const JobTrackerPage = () => {
                   title="Offer"
                   description="Interview completed. Waiting for offer from the company."
                 >
-                  <div className="space-y-3">
-                    {offerJobs.map((job) => (
-                      <JobCard key={job.id} job={job} isDraggable />
-                    ))}
-                    {offerJobs.length === 0 && (
-                      <div className="flex items-center justify-center h-40 text-muted-foreground">
-                        <p className="text-sm">No offers yet</p>
-                      </div>
-                    )}
+                  <div>
+                    <div className="space-y-3">
+                      {offerJobs.map((job) => (
+                        <JobCard key={job.id} job={job} isDraggable />
+                      ))}
+                      {offerJobs.length === 0 && (
+                        <div className="flex items-center justify-center h-40 text-muted-foreground">
+                          <p className="text-sm">No offers yet</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </DropZone>
               </div>
