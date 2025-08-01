@@ -3,6 +3,8 @@ import Sidebar from "@/components/Sidebar";
 import Dashboard from "@/components/Dashboard";
 import JobTrackerPage from "@/components/JobTrackerPage";
 import FindJobs from "@/components/FindJobs";
+import ResumeManager from "@/components/ResumeManager";
+import ScanHistory from "@/components/ScanHistory";
 
 const Index = () => {
   const [activeItem, setActiveItem] = useState("dashboard");
@@ -19,6 +21,8 @@ const Index = () => {
         {activeItem === "new-scan" && <Dashboard />}
         {activeItem === "job-tracker" && <JobTrackerPage />}
         {activeItem === "find-jobs" && <FindJobs />}
+        {activeItem === "resume-manager" && <ResumeManager />}
+        {activeItem === "scan-history" && <ScanHistory />}
         {/* Other views can be added here */}
       </main>
     </div>
