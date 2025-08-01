@@ -17,8 +17,6 @@ interface SkillMatchResultsProps {
 }
 
 const SkillMatchResults = ({ onBack }: SkillMatchResultsProps) => {
-  const [activeTab, setActiveTab] = useState<'hard' | 'soft'>('hard');
-
   const matchScore = 40;
   const jobTitle = "IT Intern";
   const company = "Company Name";
@@ -39,8 +37,6 @@ const SkillMatchResults = ({ onBack }: SkillMatchResultsProps) => {
     { name: "collaboration", resume: 2, jobDescription: 1, status: 'match' },
     { name: "communication", resume: 0, jobDescription: 1, status: 'missing' },
   ];
-
-  const currentSkills = activeTab === 'hard' ? hardSkills : softSkills;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -155,39 +151,18 @@ const SkillMatchResults = ({ onBack }: SkillMatchResultsProps) => {
         </CardContent>
       </Card>
 
-      {/* Skills Analysis */}
+      {/* Hard Skills Analysis */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Skills Analysis</CardTitle>
-            <div className="flex space-x-2">
-              <Button 
-                variant={activeTab === 'hard' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setActiveTab('hard')}
-              >
-                Hard Skills
-              </Button>
-              <Button 
-                variant={activeTab === 'soft' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setActiveTab('soft')}
-              >
-                Soft Skills
-              </Button>
-            </div>
-          </div>
+          <CardTitle>Hard Skills Analysis</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              {activeTab === 'hard' 
-                ? "Hard skills show your technical qualifications and expertise. You can learn hard skills in classrooms, training courses, and on the job. These skills are typically focused on hard facts and demonstrable tasks such as the use of tools, equipment, or software."
-                : "Soft skills are your interpersonal and communication skills. These skills will especially help you as a good employee for any company. Soft skills have been shown to increase your hireability."
-              }
+              Hard skills show your technical qualifications and expertise. You can learn hard skills in classrooms, training courses, and on the job. These skills are typically focused on hard facts and demonstrable tasks such as the use of tools, equipment, or software.
             </p>
 
-            {/* Skills Table */}
+            {/* Hard Skills Table */}
             <div className="border rounded-lg overflow-hidden">
               <div className="bg-muted p-3 grid grid-cols-4 gap-4 font-medium text-sm">
                 <div>Skill</div>
@@ -196,7 +171,46 @@ const SkillMatchResults = ({ onBack }: SkillMatchResultsProps) => {
                 <div className="text-center">Status</div>
               </div>
               
-              {currentSkills.map((skill, index) => (
+              {hardSkills.map((skill, index) => (
+                <div key={index} className="p-3 grid grid-cols-4 gap-4 items-center border-t text-sm">
+                  <div className="font-medium">{skill.name}</div>
+                  <div className="text-center">{skill.resume}</div>
+                  <div className="text-center">{skill.jobDescription}</div>
+                  <div className="flex justify-center">
+                    {getStatusIcon(skill.status)}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-sm text-muted-foreground">
+              Don't see skills from the job description? <Button variant="link" className="p-0 h-auto text-primary">Add Skill</Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Soft Skills Analysis */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Soft Skills Analysis</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Soft skills are your interpersonal and communication skills. These skills will especially help you as a good employee for any company. Soft skills have been shown to increase your hireability.
+            </p>
+
+            {/* Soft Skills Table */}
+            <div className="border rounded-lg overflow-hidden">
+              <div className="bg-muted p-3 grid grid-cols-4 gap-4 font-medium text-sm">
+                <div>Skill</div>
+                <div className="text-center">Resume</div>
+                <div className="text-center">Job Description</div>
+                <div className="text-center">Status</div>
+              </div>
+              
+              {softSkills.map((skill, index) => (
                 <div key={index} className="p-3 grid grid-cols-4 gap-4 items-center border-t text-sm">
                   <div className="font-medium">{skill.name}</div>
                   <div className="text-center">{skill.resume}</div>

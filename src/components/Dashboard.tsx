@@ -2,8 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { ArrowRight, Calendar, Star, Upload, Bookmark, Search, MapPin, X, FileText } from "lucide-react";
+import { ArrowRight, Calendar, Star, Upload, Bookmark, Search, MapPin, X, FileText, LogOut, User } from "lucide-react";
 import { useState, useRef } from "react";
+import { useAuth } from "@/context/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 interface DashboardProps {
   onNavigateToResults?: () => void;
@@ -13,6 +22,7 @@ const Dashboard = ({ onNavigateToResults }: DashboardProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user, logout } = useAuth();
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
@@ -57,15 +67,47 @@ const Dashboard = ({ onNavigateToResults }: DashboardProps) => {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-foreground">Welcome to SkillMatch AI!</h1>
-        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <Star className="h-4 w-4 text-warning" />
-          <span>Try 2 weeks Premium</span>
-          <Button variant="ghost" size="icon">
-            <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-              <span className="text-xs text-muted-foreground">H</span>
-            </div>
-          </Button>
+        <h1 className="text-3xl font-bold text-foreground">Welcome to SkillMatch AI{user?.name ? `, ${user.name}` : ''}!</h1>
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <Star className="h-4 w-4 text-warning" />
+            <span>Try 2 weeks Premium</span>
+          </div>
+          
+          {/* User Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="relative">
+                <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-xs text-primary-foreground font-medium">
+                    {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                  </span>
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium">{user?.name || 'User'}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email}</p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Star className="mr-2 h-4 w-4" />
+                Upgrade to Premium
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={logout} className="text-red-600">
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
