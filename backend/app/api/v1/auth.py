@@ -1,14 +1,16 @@
 """
 Authentication API Routes
-Handles user registration, login, logout, and token management
+Handles user registration, login, logout, and token management with session tracking
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime, timedelta
 import asyncpg
 import uuid
+import user_agents
+from ipaddress import AddressValueError, ip_address
 
 from app.core.database import get_db
 from app.core.auth import (
@@ -16,6 +18,7 @@ from app.core.auth import (
     create_refresh_token, 
     verify_refresh_token,
     get_current_active_user,
+    generate_session_token,
     security
 )
 from app.core.security import hash_password, verify_password, validate_password_strength
@@ -29,19 +32,64 @@ from app.models.auth import (
     PasswordResetConfirm,
     ChangePassword
 )
+from app.models.session import SessionCreate, DeviceInfo
+from app.services.session import SessionService
 from app.core.config import settings
 
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
+def extract_device_info(request: Request) -> DeviceInfo:
+    """Extract device information from request headers"""
+    user_agent_string = request.headers.get("User-Agent", "")
+    user_agent = user_agents.parse(user_agent_string)
+    
+    return DeviceInfo(
+        device_type="mobile" if user_agent.is_mobile else "tablet" if user_agent.is_tablet else "desktop",
+        os=f"{user_agent.os.family} {user_agent.os.version_string}",
+        browser=f"{user_agent.browser.family}",
+        browser_version=user_agent.browser.version_string,
+        user_agent=user_agent_string,
+        timezone=request.headers.get("X-Timezone", "UTC")
+    )
+
+
+def extract_ip_address(request: Request) -> str:
+    """Extract client IP address from request"""
+    # Check for forwarded IP first (common in reverse proxy setups)
+    forwarded_for = request.headers.get("X-Forwarded-For")
+    if forwarded_for:
+        # Take the first IP in the chain
+        ip = forwarded_for.split(",")[0].strip()
+        try:
+            ip_address(ip)  # Validate IP format
+            return ip
+        except AddressValueError:
+            pass
+    
+    # Check other common headers
+    real_ip = request.headers.get("X-Real-IP")
+    if real_ip:
+        try:
+            ip_address(real_ip)
+            return real_ip
+        except AddressValueError:
+            pass
+    
+    # Fall back to client IP
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    return client_ip
+
+
 @router.post("/register", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def register_user(
     user_data: UserCreate,
+    request: Request,
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Register a new user account
+    Register a new user account with session tracking
     """
     # Validate password strength
     is_valid, error_msg = validate_password_strength(user_data.password)
@@ -88,11 +136,32 @@ async def register_user(
                 "updated_at": now
             }
         )
-        await db.commit()
         
-        # Create tokens
-        access_token = create_access_token(data={"sub": user_id})
-        refresh_token = create_refresh_token(data={"sub": user_id})
+        # Create tokens with JTI
+        access_token, access_jti = create_access_token(data={"sub": user_id})
+        refresh_token, refresh_jti = create_refresh_token(data={"sub": user_id})
+        
+        # Extract session information
+        device_info = extract_device_info(request)
+        ip_addr = extract_ip_address(request)
+        
+        # Create session
+        session_data = SessionCreate(
+            device_info=device_info,
+            ip_address=ip_addr
+        )
+        
+        access_expires_at = now + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
+        
+        session_token = generate_session_token()
+        session_id = await SessionService.create_session(
+            db=db,
+            user_id=user_id,
+            jwt_jti=access_jti,
+            token=session_token,
+            session_data=session_data,
+            expires_at=access_expires_at
+        )
         
         # Create user response
         user_response = UserResponse(
@@ -111,25 +180,25 @@ async def register_user(
             user=user_response
         )
         
-    except asyncpg.exceptions.UniqueViolationError:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User with this email already exists"
-        )
-    except asyncpg.exceptions.PostgresError as e:
+    except HTTPException:
+        await db.rollback()
+        raise
+    except Exception as e:
+        await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Database error occurred"
+            detail="Registration failed"
         )
 
 
 @router.post("/login", response_model=TokenResponse)
 async def login_user(
     user_credentials: UserLogin,
+    request: Request,
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Login user and return JWT tokens
+    Login user and return JWT tokens with session tracking
     """
     try:
         # Get user from database using SQLAlchemy
@@ -170,9 +239,32 @@ async def login_user(
                 detail="User account is disabled"
             )
         
-        # Create tokens
-        access_token = create_access_token(data={"sub": str(user_row.id)})
-        refresh_token = create_refresh_token(data={"sub": str(user_row.id)})
+        # Create tokens with JTI
+        access_token, access_jti = create_access_token(data={"sub": str(user_row.id)})
+        refresh_token, refresh_jti = create_refresh_token(data={"sub": str(user_row.id)})
+        
+        # Extract session information
+        device_info = extract_device_info(request)
+        ip_addr = extract_ip_address(request)
+        
+        # Create session
+        session_data = SessionCreate(
+            device_info=device_info,
+            ip_address=ip_addr
+        )
+        
+        now = datetime.utcnow()
+        access_expires_at = now + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
+        
+        session_token = generate_session_token()
+        session_id = await SessionService.create_session(
+            db=db,
+            user_id=str(user_row.id),
+            jwt_jti=access_jti,
+            token=session_token,
+            session_data=session_data,
+            expires_at=access_expires_at
+        )
         
         # Create user response
         user_response = UserResponse(
@@ -183,8 +275,6 @@ async def login_user(
             created_at=user_row.created_at,
             updated_at=user_row.updated_at
         )
-        
-        await db.commit()
         
         return TokenResponse(
             access_token=access_token,
@@ -205,62 +295,123 @@ async def login_user(
         )
 
 
-@router.post("/refresh", response_model=dict)
+@router.post("/refresh", response_model=TokenResponse)
 async def refresh_token(
     token_data: TokenRefresh,
+    request: Request,
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Refresh access token using refresh token
+    Refresh access token using refresh token with session validation
     """
     try:
-        # Verify refresh token
-        user_id = verify_refresh_token(token_data.refresh_token)
+        # Verify refresh token and get session info
+        user_id, old_jwt_jti = await verify_refresh_token(token_data.refresh_token, db)
         
         # Get user from database
-        async with db.begin():
-            result = await db.execute(
-                "SELECT id, is_active FROM users WHERE id = $1",
-                user_id
-            )
-            user_row = result.fetchone()
+        from sqlalchemy import text
+        result = await db.execute(
+            text("SELECT id, email, full_name, is_active, created_at, updated_at FROM users WHERE id = :user_id"),
+            {"user_id": user_id}
+        )
+        user_row = result.fetchone()
         
-        if not user_row or not user_row['is_active']:
+        if not user_row or not user_row.is_active:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User not found or inactive"
             )
         
-        # Create new access token
-        access_token = create_access_token(data={"sub": user_id})
+        # Create new tokens with JTI
+        access_token, access_jti = create_access_token(data={"sub": user_id})
+        refresh_token, refresh_jti = create_refresh_token(data={"sub": user_id})
         
-        return {
-            "access_token": access_token,
-            "token_type": "bearer",
-            "expires_in": settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60
-        }
+        # Extract session information
+        device_info = extract_device_info(request)
+        ip_addr = extract_ip_address(request)
         
-    except asyncpg.exceptions.PostgresError as e:
+        # Update session with new JTI and extend expiry
+        session_data = SessionCreate(
+            device_info=device_info,
+            ip_address=ip_addr
+        )
+        
+        now = datetime.utcnow()
+        access_expires_at = now + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
+        
+        # Create new session for refreshed token
+        session_token = generate_session_token()
+        await SessionService.create_session(
+            db=db,
+            user_id=user_id,
+            jwt_jti=access_jti,
+            token=session_token,
+            session_data=session_data,
+            expires_at=access_expires_at
+        )
+        
+        # Revoke old session
+        await SessionService.revoke_sessions_by_jwt_jti(db, [old_jwt_jti])
+        
+        # Create user response
+        user_response = UserResponse(
+            id=str(user_row.id),
+            email=user_row.email,
+            name=user_row.full_name,
+            is_active=user_row.is_active,
+            created_at=user_row.created_at,
+            updated_at=user_row.updated_at
+        )
+        
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+            user=user_response
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Database error occurred"
+            detail="Token refresh failed"
         )
 
 
-@router.post("/logout")
+@router.post("/logout", status_code=status.HTTP_200_OK)
 async def logout_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-    current_user: UserResponse = Depends(get_current_active_user)
+    request: Request,
+    current_user: UserResponse = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
 ):
     """
-    Logout user (in a real app, you'd invalidate the token)
+    Logout user and revoke current session
     """
-    # In a production app, you would:
-    # 1. Add the token to a blacklist
-    # 2. Store blacklisted tokens in Redis with expiration
-    # 3. Check blacklist in the auth dependency
-    
-    return {"message": "Successfully logged out"}
+    try:
+        # Get current session JTI from token
+        auth_header = request.headers.get("Authorization")
+        if auth_header:
+            from jose import jwt
+            
+            try:
+                token = auth_header.replace("Bearer ", "")
+                payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
+                jwt_jti = payload.get("jti")
+                
+                if jwt_jti:
+                    # Revoke current session
+                    await SessionService.revoke_sessions_by_jwt_jti(db, [jwt_jti])
+            except:
+                pass  # If we can't decode token, just return success
+        
+        return {"message": "Successfully logged out"}
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Logout failed"
+        )
 
 
 @router.get("/me", response_model=UserResponse)

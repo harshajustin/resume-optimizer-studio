@@ -1,6 +1,6 @@
 """
 Authentication Dependencies
-FastAPI dependencies for authentication and authorization
+FastAPI dependencies for authentication and authorization with session management
 """
 
 from fastapi import Depends, HTTPException, status
@@ -9,10 +9,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 import asyncpg
+import uuid
+import secrets
 
 from app.core.config import settings
 from app.core.database import get_db
 from app.models.auth import UserResponse
+from app.services.session import SessionService
 
 
 # Security scheme for JWT tokens
@@ -24,7 +27,7 @@ async def get_current_user(
     db: AsyncSession = Depends(get_db)
 ) -> UserResponse:
     """
-    Get current authenticated user from JWT token
+    Get current authenticated user from JWT token with session validation
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -39,7 +42,9 @@ async def get_current_user(
             algorithms=[settings.JWT_ALGORITHM]
         )
         user_id: str = payload.get("sub")
-        if user_id is None:
+        jwt_jti: str = payload.get("jti")  # JWT ID for session tracking
+        
+        if user_id is None or jwt_jti is None:
             raise credentials_exception
             
         # Check token expiration
@@ -51,37 +56,46 @@ async def get_current_user(
                 headers={"WWW-Authenticate": "Bearer"},
             )
             
+        # Validate session exists and is not revoked
+        session = await SessionService.get_session_by_jwt_jti(db, jwt_jti)
+        if not session or session["is_revoked"]:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Session revoked or invalid",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+            
     except JWTError:
         raise credentials_exception
 
     # Get user from database
     try:
-        query = """
-        SELECT id, email, name, is_active, created_at, updated_at 
-        FROM users WHERE id = $1
-        """
-        
-        user_row = await db.fetchrow(query, user_id)
+        from sqlalchemy import text
+        result = await db.execute(
+            text("SELECT id, email, full_name, is_active, created_at, updated_at FROM users WHERE id = :user_id"),
+            {"user_id": user_id}
+        )
+        user_row = result.fetchone()
             
         if user_row is None:
             raise credentials_exception
             
-        if not user_row['is_active']:
+        if not user_row.is_active:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User account is disabled"
             )
             
         return UserResponse(
-            id=user_row['id'],
-            email=user_row['email'],
-            name=user_row['name'],
-            is_active=user_row['is_active'],
-            created_at=user_row['created_at'],
-            updated_at=user_row['updated_at']
+            id=str(user_row.id),
+            email=user_row.email,
+            name=user_row.full_name,
+            is_active=user_row.is_active,
+            created_at=user_row.created_at,
+            updated_at=user_row.updated_at
         )
         
-    except asyncpg.exceptions.PostgresError as e:
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Database error"
@@ -104,7 +118,7 @@ async def get_current_active_user(
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     """
-    Create JWT access token
+    Create JWT access token with JTI for session tracking
     """
     to_encode = data.copy()
     if expires_delta:
@@ -112,14 +126,22 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=settings.JWT_ACCESS_TOKEN_EXPIRE_MINUTES)
     
-    to_encode.update({"exp": expire})
+    # Add JWT ID for session tracking
+    jti = str(uuid.uuid4())
+    to_encode.update({
+        "exp": expire,
+        "jti": jti,
+        "iat": datetime.utcnow(),
+        "type": "access"
+    })
+    
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-    return encoded_jwt
+    return encoded_jwt, jti
 
 
 def create_refresh_token(data: dict, expires_delta: timedelta = None):
     """
-    Create JWT refresh token
+    Create JWT refresh token with JTI for session tracking
     """
     to_encode = data.copy()
     if expires_delta:
@@ -127,21 +149,30 @@ def create_refresh_token(data: dict, expires_delta: timedelta = None):
     else:
         expire = datetime.utcnow() + timedelta(days=settings.JWT_REFRESH_TOKEN_EXPIRE_DAYS)
     
-    to_encode.update({"exp": expire, "type": "refresh"})
+    # Add JWT ID for session tracking
+    jti = str(uuid.uuid4())
+    to_encode.update({
+        "exp": expire,
+        "jti": jti,
+        "iat": datetime.utcnow(),
+        "type": "refresh"
+    })
+    
     encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM)
-    return encoded_jwt
+    return encoded_jwt, jti
 
 
-def verify_refresh_token(token: str) -> str:
+async def verify_refresh_token(token: str, db: AsyncSession) -> tuple[str, str]:
     """
-    Verify refresh token and return user ID
+    Verify refresh token and return user ID and JTI
     """
     try:
         payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
         user_id: str = payload.get("sub")
         token_type: str = payload.get("type")
+        jwt_jti: str = payload.get("jti")
         
-        if user_id is None or token_type != "refresh":
+        if user_id is None or token_type != "refresh" or jwt_jti is None:
             raise JWTError("Invalid token")
             
         # Check token expiration
@@ -149,10 +180,22 @@ def verify_refresh_token(token: str) -> str:
         if exp is None or datetime.utcnow() > datetime.fromtimestamp(exp):
             raise JWTError("Token expired")
             
-        return user_id
+        # Validate session exists and is not revoked
+        session = await SessionService.get_session_by_jwt_jti(db, jwt_jti)
+        if not session or session["is_revoked"]:
+            raise JWTError("Session revoked or invalid")
+            
+        return user_id, jwt_jti
         
-    except JWTError:
+    except JWTError as e:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid refresh token"
+            detail=f"Invalid refresh token: {str(e)}"
         )
+
+
+def generate_session_token() -> str:
+    """
+    Generate a secure session token for additional session tracking
+    """
+    return secrets.token_urlsafe(32)
