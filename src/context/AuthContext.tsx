@@ -1,17 +1,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface User {
-  id: string;
-  email: string;
-  name: string;
-}
+import { authAPI, User } from '@/services/auth';
 
 interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
+  register: (email: string, name: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
   isAuthenticated: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,53 +31,94 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   // Check for stored auth on component mount
   useEffect(() => {
-    const storedUser = localStorage.getItem('skillmatch_user');
-    if (storedUser) {
+    const initializeAuth = async () => {
       try {
-        setUser(JSON.parse(storedUser));
+        const storedUser = authAPI.getStoredUser();
+        const accessToken = authAPI.getAccessToken();
+        
+        if (storedUser && accessToken) {
+          // Check if token is still valid
+          if (!authAPI.isTokenExpired()) {
+            setUser(storedUser);
+          } else {
+            // Try to refresh the token
+            try {
+              await authAPI.refreshToken();
+              // Get updated user info
+              const currentUser = await authAPI.getCurrentUser();
+              setUser(currentUser);
+            } catch (error) {
+              // Refresh failed, clear auth data
+              authAPI.logout();
+              setUser(null);
+            }
+          }
+        }
       } catch (error) {
-        localStorage.removeItem('skillmatch_user');
+        console.error('Auth initialization error:', error);
+        authAPI.logout();
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // For demo purposes, accept any email/password combination
-    // In a real app, this would be an API call
-    if (email && password) {
-      const userData: User = {
-        id: '1',
-        email: email,
-        name: email.split('@')[0], // Use email prefix as name
-      };
-      
-      setUser(userData);
-      localStorage.setItem('skillmatch_user', JSON.stringify(userData));
-      setIsLoading(false);
+    try {
+      const authResponse = await authAPI.login({ email, password });
+      setUser(authResponse.user);
       return true;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const register = async (email: string, name: string, password: string): Promise<boolean> => {
+    setIsLoading(true);
     
-    setIsLoading(false);
-    return false;
+    try {
+      const authResponse = await authAPI.register({ email, name, password });
+      setUser(authResponse.user);
+      return true;
+    } catch (error) {
+      console.error('Registration error:', error);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const logout = () => {
+    authAPI.logout();
     setUser(null);
-    localStorage.removeItem('skillmatch_user');
+  };
+
+  const refreshUser = async () => {
+    try {
+      const currentUser = await authAPI.getCurrentUser();
+      setUser(currentUser);
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+      logout();
+    }
   };
 
   const value: AuthContextType = {
     user,
     login,
+    register,
     logout,
     isLoading,
     isAuthenticated: !!user,
+    refreshUser,
   };
 
   return (

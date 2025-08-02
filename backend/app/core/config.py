@@ -56,7 +56,7 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = ""
     
     # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:5173,http://localhost:8080"
     
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = 60
@@ -73,6 +73,11 @@ class Settings(BaseSettings):
     def allowed_file_types_list(self) -> List[str]:
         """Get allowed file types as a list"""
         return [ext.strip() for ext in self.ALLOWED_FILE_TYPES.split(",")]
+    
+    @property
+    def allowed_origins_list(self) -> List[str]:
+        """Get allowed origins as a list"""
+        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
     
     @property
     def max_file_size_bytes(self) -> int:

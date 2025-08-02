@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -7,7 +8,8 @@ import { Alert, AlertDescription } from './ui/alert';
 import { Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
-const Login = () => {
+const Login = ({ onSwitchToSignup }: { onSwitchToSignup?: () => void }) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -28,9 +30,13 @@ const Login = () => {
       return;
     }
 
-    const success = await login(email, password);
-    if (!success) {
-      setError('Invalid email or password');
+    try {
+      const success = await login(email, password);
+      if (!success) {
+        setError('Invalid email or password');
+      }
+    } catch (error) {
+      setError('An error occurred during login. Please try again.');
     }
   };
 
@@ -144,7 +150,12 @@ const Login = () => {
               </Button>
               <p className="text-sm text-muted-foreground">
                 Don't have an account?{' '}
-                <Button variant="link" className="p-0 h-auto text-primary">
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-primary"
+                  onClick={onSwitchToSignup || (() => navigate('/signup'))}
+                  disabled={isLoading}
+                >
                   Sign up
                 </Button>
               </p>

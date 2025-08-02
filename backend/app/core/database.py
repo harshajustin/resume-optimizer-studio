@@ -34,7 +34,7 @@ AsyncSessionLocal = async_sessionmaker(
 Base = declarative_base()
 
 
-async def get_db() -> AsyncSession:
+async def get_db():
     """
     Dependency function to get database session
     """
@@ -53,15 +53,41 @@ async def init_db():
     """
     Initialize database connection and run health check
     """
+    import asyncio
+    
     try:
+        # Add timeout for database connection
         async with engine.begin() as conn:
-            # Test connection
-            await conn.execute(text("SELECT 1"))
+            # Test connection with timeout
+            result = await asyncio.wait_for(
+                conn.execute(text("SELECT 1")), 
+                timeout=10.0
+            )
             logger.info("✅ Database connection established successfully")
             
+            # Test basic query
+            version = await asyncio.wait_for(
+                conn.execute(text("SELECT version()")), 
+                timeout=10.0
+            )
+            version_result = version.fetchone()
+            if version_result:
+                logger.info(f"📊 Connected to: {version_result[0][:50]}...")
+            
+    except asyncio.TimeoutError:
+        logger.error("❌ Database connection timeout", error="Connection took longer than 10 seconds")
+        # Don't raise in development - allow server to start without DB
+        if settings.ENVIRONMENT == "development":
+            logger.warning("⚠️ Starting server without database connection (development mode)")
+        else:
+            raise Exception("Database connection timeout - check firewall and network settings")
     except Exception as e:
         logger.error("❌ Database connection failed", error=str(e))
-        raise
+        # Don't raise in development - allow server to start without DB
+        if settings.ENVIRONMENT == "development":
+            logger.warning("⚠️ Starting server without database connection (development mode)")
+        else:
+            raise
 
 
 async def close_db():
