@@ -142,7 +142,22 @@ async def login_user(
         user_row = result.fetchone()
         
         # Verify user exists and password is correct
-        if not user_row or not verify_password(user_credentials.password, user_row.hashed_password):
+        if not user_row:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect email or password"
+            )
+        
+        # Verify password with bcrypt warning suppression
+        try:
+            import warnings
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", message=".*bcrypt.*")
+                password_valid = verify_password(user_credentials.password, user_row.hashed_password)
+        except Exception:
+            password_valid = False
+            
+        if not password_valid:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect email or password"
@@ -161,13 +176,15 @@ async def login_user(
         
         # Create user response
         user_response = UserResponse(
-            id=user_row.id,
+            id=str(user_row.id),
             email=user_row.email,
-            full_name=user_row.full_name,
+            name=user_row.full_name,
             is_active=user_row.is_active,
             created_at=user_row.created_at,
             updated_at=user_row.updated_at
         )
+        
+        await db.commit()
         
         return TokenResponse(
             access_token=access_token,
@@ -176,7 +193,12 @@ async def login_user(
             user=user_response
         )
         
+    except HTTPException:
+        # Re-raise HTTP exceptions as they are
+        raise
     except Exception as e:
+        await db.rollback()
+        print(f"Login error: {e}")  # Debug print
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Authentication error occurred"

@@ -3,12 +3,15 @@ Password Security Utilities
 Password hashing and verification using bcrypt
 """
 
+import warnings
 from passlib.context import CryptContext
 import secrets
 import string
 
 from app.core.config import settings
 
+# Suppress bcrypt version warning
+warnings.filterwarnings("ignore", message=".*bcrypt.*", category=UserWarning)
 
 # Create password context
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
