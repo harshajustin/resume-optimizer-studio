@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import Login from './Login';
+import AuthPage from './AuthPage';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -26,9 +26,9 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
-  // If not authenticated, show login page
+  // If not authenticated, show auth page (login/signup)
   if (!isAuthenticated) {
-    return <Login />;
+    return <AuthPage />;
   }
 
   // If authenticated, render the protected content
