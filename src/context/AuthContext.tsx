@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { authAPI, User } from '@/services/auth';
+import { sessionAPI } from '@/services/session';
 
 interface AuthContextType {
   user: User | null;
@@ -96,9 +97,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const logout = () => {
-    authAPI.logout();
-    setUser(null);
+  const logout = async () => {
+    try {
+      // Use enhanced logout with session revocation
+      await sessionAPI.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Continue with logout even if server request fails
+      authAPI.logout();
+    } finally {
+      setUser(null);
+    }
   };
 
   const refreshUser = async () => {

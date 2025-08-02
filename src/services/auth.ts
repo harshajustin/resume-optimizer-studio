@@ -53,12 +53,17 @@ class AuthAPIService {
     };
   }
 
+  private getTimezoneHeaders(): HeadersInit {
+    return {
+      'Content-Type': 'application/json',
+      'X-Timezone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+    };
+  }
+
   async login(credentials: LoginRequest): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.getTimezoneHeaders(),
       body: JSON.stringify(credentials),
     });
 
@@ -80,9 +85,7 @@ class AuthAPIService {
   async register(userData: RegisterRequest): Promise<AuthResponse> {
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.getTimezoneHeaders(),
       body: JSON.stringify(userData),
     });
 
@@ -110,9 +113,7 @@ class AuthAPIService {
 
     const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.getTimezoneHeaders(),
       body: JSON.stringify({ refresh_token: refreshToken }),
     });
 
