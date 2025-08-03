@@ -45,6 +45,11 @@ ENV/
 backend/.env
 frontend/.env
 
+# JWT tokens and sensitive data
+**/fresh_token.txt
+**/token.txt
+**/*token*.txt
+
 # Deployment scripts with potential secrets - Review before committing
 # backend/setup_droplet.sh  # Uncomment if this contains secrets
 
