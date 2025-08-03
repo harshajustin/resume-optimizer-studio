@@ -1,6 +1,11 @@
 #!/bin/bash
 # DigitalOcean Droplet Setup Script for SkillMatch Backend
 # Run this on a new Ubuntu 22.04 droplet
+#
+# ⚠️ SECURITY WARNING: This script creates placeholder environment variables
+# ⚠️ You MUST manually edit the .env file with real credentials before running the service
+# ⚠️ NEVER commit real credentials to version control
+#
 
 echo "🚀 Setting up SkillMatch Backend on DigitalOcean Droplet..."
 
@@ -29,20 +34,27 @@ source venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Create .env file
+# Create .env file from template
 cat > .env << EOF
-DATABASE_URL=postgresql+asyncpg://doadmin:***REMOVED***@skillmatch-postgres-cluster-do-user-23189851-0.i.db.ondigitalocean.com:25060/defaultdb?ssl=require
-JWT_SECRET_KEY=***REMOVED***
-DO_SPACES_ACCESS_KEY=***REMOVED***
-DO_SPACES_SECRET_KEY=***REMOVED***
-DO_SPACES_BUCKET_NAME=skillmatchai
-DO_SPACES_REGION=blr1
-DO_SPACES_ENDPOINT=https://skillmatchai.blr1.digitaloceanspaces.com
-DO_SPACES_CDN_ENDPOINT=https://skillmatchai.blr1.cdn.digitaloceanspaces.com
+# ⚠️ SECURITY WARNING: Replace ALL these placeholder values with actual credentials
+# This is just a template - DO NOT use these placeholder values in production!
+
+DATABASE_URL=postgresql+asyncpg://YOUR_DB_USER:YOUR_DB_PASSWORD@YOUR_DB_HOST:25060/YOUR_DB_NAME?ssl=require
+JWT_SECRET_KEY=REPLACE_WITH_SECURE_RANDOM_STRING_GENERATE_WITH_openssl_rand_hex_32
+DO_SPACES_ACCESS_KEY=YOUR_DIGITALOCEAN_SPACES_ACCESS_KEY
+DO_SPACES_SECRET_KEY=YOUR_DIGITALOCEAN_SPACES_SECRET_KEY
+DO_SPACES_BUCKET_NAME=your-bucket-name
+DO_SPACES_REGION=your-region
+DO_SPACES_ENDPOINT=https://your-bucket.your-region.digitaloceanspaces.com
+DO_SPACES_CDN_ENDPOINT=https://your-bucket.your-region.cdn.digitaloceanspaces.com
 ENVIRONMENT=production
 DEBUG=false
 ALLOWED_ORIGINS=https://yourdomain.com
 EOF
+
+echo "⚠️  IMPORTANT: Edit .env file with your actual credentials before proceeding!"
+echo "   Run: nano .env"
+read -p "Press Enter after you've updated .env with real credentials..."
 
 # Test database connection
 echo "🔍 Testing database connection..."

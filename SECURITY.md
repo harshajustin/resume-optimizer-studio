@@ -8,7 +8,12 @@
    - All `.env*` files (except `.env.example`) should be in `.gitignore`
    - Use `.env.example` as a template with placeholder values only
 
-2. **If you accidentally commit secrets:**
+2. **NEVER commit deployment scripts with real credentials**
+   - Review all `.sh`, `.yaml`, `.json` files before committing
+   - Use placeholder values in deployment templates
+   - Keep actual deployment configs separate from version control
+
+3. **If you accidentally commit secrets:**
    ```bash
    # Immediately revoke all exposed credentials
    # Then remove from git history:
