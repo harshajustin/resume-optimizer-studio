@@ -1,0 +1,47 @@
+name: skillmatch-backend
+services:
+- name: api
+  source_dir: /backend
+  github:
+    repo: harshajustin/resume-optimizer-studio
+    branch: production
+  run_command: python -m uvicorn main:app --host 0.0.0.0 --port $PORT
+  environment_slug: python
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  envs:
+  - key: DATABASE_URL
+    value: ${DATABASE_URL}
+  - key: JWT_SECRET_KEY
+    value: ${JWT_SECRET_KEY}
+  - key: DO_SPACES_ACCESS_KEY
+    value: ${DO_SPACES_ACCESS_KEY}
+  - key: DO_SPACES_SECRET_KEY
+    value: ${DO_SPACES_SECRET_KEY}
+  - key: DO_SPACES_BUCKET_NAME
+    value: skillmatchai
+  - key: DO_SPACES_REGION
+    value: blr1
+  - key: DO_SPACES_ENDPOINT
+    value: https://skillmatchai.blr1.digitaloceanspaces.com
+  - key: DO_SPACES_CDN_ENDPOINT
+    value: https://skillmatchai.blr1.cdn.digitaloceanspaces.com
+  - key: ENVIRONMENT
+    value: production
+  - key: DEBUG
+    value: "false"
+  - key: ALLOWED_ORIGINS
+    value: "https://yourdomain.com,https://www.yourdomain.com"
+  http_port: 8080
+jobs:
+- name: migrate
+  source_dir: /backend
+  github:
+    repo: harshajustin/resume-optimizer-studio
+    branch: production
+  run_command: python migrate_db.py
+  environment_slug: python
+  kind: PRE_DEPLOY
+  envs:
+  - key: DATABASE_URL
+    value: ${DATABASE_URL}
