@@ -5,6 +5,7 @@ services:
   github:
     repo: harshajustin/resume-optimizer-studio
     branch: Backend
+  build_command: pip install -r requirements.txt
   run_command: python -m uvicorn main:app --host 0.0.0.0 --port $PORT
   environment_slug: python
   instance_count: 1
@@ -39,6 +40,7 @@ jobs:
   github:
     repo: harshajustin/resume-optimizer-studio
     branch: Backend
+  build_command: pip install -r requirements.txt
   run_command: python migrate_db.py
   environment_slug: python
   kind: PRE_DEPLOY
