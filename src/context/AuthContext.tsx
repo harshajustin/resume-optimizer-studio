@@ -10,6 +10,8 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   refreshUser: () => Promise<void>;
+  lastError: string | null;
+  clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,6 +31,11 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [lastError, setLastError] = useState<string | null>(null);
+
+  const clearError = () => {
+    setLastError(null);
+  };
 
   // Check for stored auth on component mount
   useEffect(() => {
@@ -69,6 +76,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
+    setLastError(null);
     
     try {
       const authResponse = await authAPI.login({ email, password });
@@ -76,6 +84,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return true;
     } catch (error) {
       console.error('Login error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Login failed. Please try again.';
+      setLastError(errorMessage);
       return false;
     } finally {
       setIsLoading(false);
@@ -84,6 +94,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const register = async (email: string, name: string, password: string): Promise<boolean> => {
     setIsLoading(true);
+    setLastError(null);
     
     try {
       const authResponse = await authAPI.register({ email, name, password });
@@ -91,6 +102,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return true;
     } catch (error) {
       console.error('Registration error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Registration failed. Please try again.';
+      setLastError(errorMessage);
       return false;
     } finally {
       setIsLoading(false);
@@ -128,6 +141,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isLoading,
     isAuthenticated: !!user,
     refreshUser,
+    lastError,
+    clearError,
   };
 
   return (
