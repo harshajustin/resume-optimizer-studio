@@ -45,6 +45,9 @@ ENV/
 backend/.env
 frontend/.env
 
+# Deployment scripts with potential secrets - Review before committing
+# backend/setup_droplet.sh  # Uncomment if this contains secrets
+
 # IDE files
 .vscode/
 .idea/
