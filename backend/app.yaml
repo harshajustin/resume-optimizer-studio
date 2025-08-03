@@ -11,13 +11,13 @@ services:
   instance_size_slug: basic-xxs
   envs:
   - key: DATABASE_URL
-    value: postgresql+asyncpg://doadmin:***REMOVED***@skillmatch-postgres-cluster-do-user-23189851-0.i.db.ondigitalocean.com:25060/defaultdb?ssl=require
+    value: postgresql+asyncpg://doadmin:AVNS_MKce1Vjgkjn1wl5XYuP@skillmatch-postgres-cluster-do-user-23189851-0.i.db.ondigitalocean.com:25060/defaultdb?ssl=require
   - key: JWT_SECRET_KEY
-    value: ***REMOVED***
+    value: skillmatch-super-secret-jwt-key-2025-production-ready-key
   - key: DO_SPACES_ACCESS_KEY
-    value: ***REMOVED***
+    value: DO00MQV9RCFQHM9H37CE
   - key: DO_SPACES_SECRET_KEY
-    value: ***REMOVED***
+    value: 374RhsvlsiyTPEl1dBh9OMeEO5d2NryZUNzBCziHcCE
   - key: DO_SPACES_BUCKET_NAME
     value: skillmatchai
   - key: DO_SPACES_REGION
@@ -44,4 +44,4 @@ jobs:
   kind: PRE_DEPLOY
   envs:
   - key: DATABASE_URL
-    value: postgresql+asyncpg://doadmin:***REMOVED***@skillmatch-postgres-cluster-do-user-23189851-0.i.db.ondigitalocean.com:25060/defaultdb?ssl=require
+    value: postgresql+asyncpg://doadmin:AVNS_MKce1Vjgkjn1wl5XYuP@skillmatch-postgres-cluster-do-user-23189851-0.i.db.ondigitalocean.com:25060/defaultdb?ssl=require
