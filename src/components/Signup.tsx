@@ -18,9 +18,9 @@ const Signup = ({ onSwitchToLogin }: { onSwitchToLogin?: () => void }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [validationError, setValidationError] = useState('');
   const [success, setSuccess] = useState('');
-  const { register, isLoading } = useAuth();
+  const { register, isLoading, lastError, clearError } = useAuth();
 
   // Password strength validation
   const getPasswordStrength = (password: string) => {
@@ -41,32 +41,32 @@ const Signup = ({ onSwitchToLogin }: { onSwitchToLogin?: () => void }) => {
 
   const validateForm = () => {
     if (!formData.fullName.trim()) {
-      setError('Full name is required');
+      setValidationError('Full name is required');
       return false;
     }
 
     if (!formData.email) {
-      setError('Email is required');
+      setValidationError('Email is required');
       return false;
     }
 
     if (!formData.email.includes('@') || !formData.email.includes('.')) {
-      setError('Please enter a valid email address');
+      setValidationError('Please enter a valid email address');
       return false;
     }
 
     if (!formData.password) {
-      setError('Password is required');
+      setValidationError('Password is required');
       return false;
     }
 
     if (formData.password.length < 8) {
-      setError('Password must be at least 8 characters long');
+      setValidationError('Password must be at least 8 characters long');
       return false;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setValidationError('Passwords do not match');
       return false;
     }
 
@@ -75,7 +75,8 @@ const Signup = ({ onSwitchToLogin }: { onSwitchToLogin?: () => void }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    clearError();
+    setValidationError('');
     setSuccess('');
 
     if (!validateForm()) {
@@ -101,22 +102,22 @@ const Signup = ({ onSwitchToLogin }: { onSwitchToLogin?: () => void }) => {
             navigate('/login');
           }
         }, 2000);
-      } else {
-        setError('Failed to create account. Please try again.');
       }
+      // Error handling is now done in AuthContext
     } catch (error: any) {
-      if (error.message.includes('already exists')) {
-        setError('An account with this email already exists. Please sign in instead.');
-      } else {
-        setError('An error occurred during registration. Please try again.');
-      }
+      // This shouldn't happen now as errors are handled in AuthContext
+      console.error('Unexpected registration error:', error);
     }
   };
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    setError(''); // Clear error when user starts typing
+    setValidationError(''); // Clear validation error when user starts typing
+    clearError(); // Clear auth error when user starts typing
   };
+
+  // Get the error to display (validation error takes precedence)
+  const displayError = validationError || lastError;
 
   const passwordStrength = getPasswordStrength(formData.password);
   const strengthInfo = getPasswordStrengthLabel(passwordStrength);
@@ -143,9 +144,9 @@ const Signup = ({ onSwitchToLogin }: { onSwitchToLogin?: () => void }) => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
+              {displayError && (
                 <Alert variant="destructive" className="mb-4">
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription>{displayError}</AlertDescription>
                 </Alert>
               )}
 
