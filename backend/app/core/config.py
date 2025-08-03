@@ -56,7 +56,7 @@ class Settings(BaseSettings):
     EMAIL_FROM: str = ""
     
     # CORS
-    ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:5173,http://localhost:8080"
+    ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:5173,http://localhost:8080,http://40.0.41.39:8000"
     
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = 60

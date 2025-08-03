@@ -64,7 +64,7 @@ export interface BulkSessionRevoke {
 
 // Session API Service
 class SessionAPIService {
-  private baseURL = 'http://localhost:8000/api/v1';
+  private baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
   private getAuthHeaders(): HeadersInit {
     const token = localStorage.getItem('skillmatch_access_token');
