@@ -23,3 +23,60 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Environment variables - CRITICAL: Never commit these!
+.env
+.env.local
+.env.development
+.env.staging
+.env.test
+*.env
+backend/.env
+frontend/.env
+
+# JWT tokens and sensitive data
+**/fresh_token.txt
+**/token.txt
+**/*token*.txt
+
+# Deployment scripts with potential secrets - Review before committing
+# backend/setup_droplet.sh  # Uncomment if this contains secrets
+backend/app.yaml  # Contains production credentials - DO NOT COMMIT
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+.next/
+
+# Database
+*.db
+*.sqlite
+

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -7,32 +8,41 @@ import { Alert, AlertDescription } from './ui/alert';
 import { Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
-const Login = () => {
+const Login = ({ onSwitchToSignup }: { onSwitchToSignup?: () => void }) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const { login, isLoading } = useAuth();
+  const [validationError, setValidationError] = useState('');
+  const { login, isLoading, lastError, clearError } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    clearError();
+    setValidationError('');
 
     if (!email || !password) {
-      setError('Please fill in all fields');
+      setValidationError('Please fill in all fields');
       return;
     }
 
     if (!email.includes('@')) {
-      setError('Please enter a valid email address');
+      setValidationError('Please enter a valid email address');
       return;
     }
 
-    const success = await login(email, password);
-    if (!success) {
-      setError('Invalid email or password');
+    try {
+      const success = await login(email, password);
+      // The error handling is now done in the AuthContext
+      // If login fails, lastError will be set automatically
+    } catch (error) {
+      // This shouldn't happen now as errors are handled in AuthContext
+      console.error('Unexpected login error:', error);
     }
   };
+
+  // Get the error to display (validation error takes precedence)
+  const displayError = validationError || lastError;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
@@ -56,9 +66,9 @@ const Login = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
+              {displayError && (
                 <Alert variant="destructive" className="mb-4">
-                  <AlertDescription>{error}</AlertDescription>
+                  <AlertDescription>{displayError}</AlertDescription>
                 </Alert>
               )}
 
@@ -144,7 +154,12 @@ const Login = () => {
               </Button>
               <p className="text-sm text-muted-foreground">
                 Don't have an account?{' '}
-                <Button variant="link" className="p-0 h-auto text-primary">
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-primary"
+                  onClick={onSwitchToSignup || (() => navigate('/signup'))}
+                  disabled={isLoading}
+                >
                   Sign up
                 </Button>
               </p>
