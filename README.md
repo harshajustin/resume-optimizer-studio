@@ -3,8 +3,7 @@
 Bridge your resume with job skill needs - A modern web application for optimizing resumes and tracking job applications, built with React, TypeScript, and Tailwind CSS.
 
 ## 🚀 Live Demo
-**Deployed on DigitalOcean App Platform**: [Your App URL]
-
+**Deployed on DigitalOcean App Platform**: 
 ## 📋 Features
 - **Resume Upload & Analysis** with drag-and-drop support
 - **Job Tracker** with Kanban board interface
