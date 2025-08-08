@@ -1,0 +1,115 @@
+name: skillmatch-ai
+services:
+  # Frontend React Application
+  - name: frontend
+    source_dir: /
+    github:
+      repo: harshajustin/resume-optimizer-studio
+      branch: main
+    run_command: npm run preview
+    build_command: npm install && npm run build
+    environment_slug: node-js
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    http_port: 8080
+    routes:
+      - path: /
+    envs:
+      - key: VITE_APP_TITLE
+        value: "SkillMatch AI"
+      - key: VITE_APP_VERSION
+        value: "1.0.0"
+      - key: VITE_API_URL
+        value: "${backend.PUBLIC_URL}/api/v1"
+      - key: VITE_ENABLE_ANALYTICS
+        value: "false"
+      - key: VITE_ENABLE_DEBUG
+        value: "false"
+
+  # Backend FastAPI Application
+  - name: backend
+    source_dir: /backend
+    github:
+      repo: harshajustin/resume-optimizer-studio
+      branch: main
+    run_command: python -m uvicorn main:app --host 0.0.0.0 --port $PORT
+    build_command: pip install -r requirements.txt
+    environment_slug: python
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    http_port: 8000
+    routes:
+      - path: /api
+      - path: /docs
+      - path: /redoc
+    envs:
+      - key: APP_NAME
+        value: "SkillMatch AI"
+      - key: APP_VERSION
+        value: "1.0.0"
+      - key: DEBUG
+        value: "false"
+      - key: ENVIRONMENT
+        value: "production"
+      - key: DATABASE_URL
+        value: "${db.DATABASE_URL}"
+        type: SECRET
+      - key: JWT_SECRET_KEY
+        value: "667f3eee83d9418f50ecca761f542236688d86ef14d47952453e22fa87604a97"
+        type: SECRET
+      - key: JWT_ALGORITHM
+        value: "HS256"
+      - key: JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: JWT_REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
+      - key: DO_SPACES_ACCESS_KEY
+        value: "DO00DGJKLL2XVRML4EGG"
+        type: SECRET
+      - key: DO_SPACES_SECRET_KEY
+        value: "tboiJDLhpVEUTsB1Ea3/sSnBTww0HZjYNU3fnabikNs"
+        type: SECRET
+      - key: DO_SPACES_BUCKET_NAME
+        value: "skillmatchai"
+      - key: DO_SPACES_REGION
+        value: "blr1"
+      - key: DO_SPACES_ENDPOINT
+        value: "https://skillmatchai.blr1.digitaloceanspaces.com"
+      - key: DO_SPACES_CDN_ENDPOINT
+        value: "https://skillmatchai.blr1.cdn.digitaloceanspaces.com"
+      - key: MAX_FILE_SIZE_MB
+        value: "25"
+      - key: ALLOWED_FILE_TYPES
+        value: "pdf,docx,doc,txt"
+      - key: UPLOAD_FOLDER
+        value: "resumes"
+      - key: REDIS_URL
+        value: "redis://redis:6379/0"
+      - key: OPENAI_API_KEY
+        value: ""
+        type: SECRET
+      - key: SENTENCE_TRANSFORMER_MODEL
+        value: "all-MiniLM-L6-v2"
+      - key: ALLOWED_ORIGINS
+        value: "${frontend.PUBLIC_URL},https://skillmatch.ai,https://www.skillmatch.ai"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "60"
+      - key: RATE_LIMIT_PER_HOUR
+        value: "1000"
+      - key: BCRYPT_ROUNDS
+        value: "12"
+      - key: SECURE_COOKIES
+        value: "true"
+
+databases:
+  - name: db
+    engine: PG
+    version: "15"
+    size: basic
+    num_nodes: 1
+
+# Optional: Redis for caching (can be added later)
+# - name: redis
+#   engine: REDIS
+#   version: "7"
+#   size: basic

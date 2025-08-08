@@ -41,9 +41,11 @@ ENV/
 .env.development
 .env.staging
 .env.test
-*.env
 backend/.env
 frontend/.env
+
+# But allow .env.production (contains no secrets, only public config)
+!.env.production
 
 # JWT tokens and sensitive data
 **/fresh_token.txt
